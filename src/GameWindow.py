@@ -11,9 +11,11 @@ class Window:
         self.snake = Snake(self.max_y, self.max_x)
         self.start = False
         self.run = True
+        self.dir_changed = False
         self.last_key = -1
-        self.buffer_direction = Direction.RIGHT
-        self.buffer_symbol = chr(9654)
+        self.direction_symbol_map = {Direction.RIGHT: chr(9654), Direction.LEFT: chr(9664),
+                                     Direction.UP: chr(9650), Direction.DOWN: chr(9660)}
+        self.buffer_direction = {0: Direction.RIGHT, 1: None}
 
     def setup(self):
         curses.noecho()
@@ -23,29 +25,40 @@ class Window:
         self.snake.init_sake()
         self.render()
 
-    def input(self):
+    def input(self, direction):
+        if direction is None:
+            direction = self.snake.direction
         cur_key = self.win.getch()
-        if cur_key == ord('w') and self.snake.direction != Direction.UP and self.snake.direction != Direction.DOWN:
-            self.buffer_direction = Direction.UP
-            self.buffer_symbol = chr(9650)
-        elif cur_key == ord('s') and self.snake.direction != Direction.UP and self.snake.direction != Direction.DOWN:
-            self.buffer_direction = Direction.DOWN
-            self.buffer_symbol = chr(9660)
-        elif cur_key == ord('a') and self.snake.direction != Direction.LEFT and self.snake.direction != Direction.RIGHT:
-            self.buffer_direction = Direction.LEFT
-            self.buffer_symbol = chr(9664)
-        elif cur_key == ord('d') and self.snake.direction != Direction.LEFT and self.snake.direction != Direction.RIGHT:
-            self.buffer_direction = Direction.RIGHT
-            self.buffer_symbol = chr(9654)
+        if cur_key == ord('w') and direction != Direction.UP and direction != Direction.DOWN:
+            self.update_buffer(Direction.UP)
+        elif cur_key == ord('s') and direction != Direction.UP and direction != Direction.DOWN:
+            self.update_buffer(Direction.DOWN)
+        elif cur_key == ord('a') and direction != Direction.LEFT and direction != Direction.RIGHT:
+            self.update_buffer(Direction.LEFT)
+        elif cur_key == ord('d') and direction != Direction.LEFT and direction != Direction.RIGHT:
+            self.update_buffer(Direction.RIGHT)
         elif cur_key == 27:
             self.run = False
-        time.sleep(0.01)
+        time.sleep(0.001)
+
+    def update_buffer(self, direction):
+        if direction is None:
+            self.buffer_direction[0] = self.buffer_direction[1]
+            self.buffer_direction[1] = None
+        elif self.buffer_direction[0] is None:
+            self.buffer_direction[0] = direction
+        elif self.buffer_direction[1] is None:
+            self.buffer_direction[1] = direction
+        else:
+            pass
 
     def render(self):
         self.win.clear()
         self.win.box()
-        self.snake.direction = self.buffer_direction
-        self.snake.head.symbol = self.buffer_symbol
+        if self.buffer_direction[0] is not None:
+            self.snake.direction = self.buffer_direction[0]
+            self.snake.head.symbol = self.direction_symbol_map[self.buffer_direction[0]]
+            self.update_buffer(None)
         self.snake.update_snake_pos()
         head_y, head_x = self.snake.head.get_coordinates()
         self.win.addstr(head_y, head_x, self.snake.head.symbol, self.snake.head.color)
@@ -76,7 +89,7 @@ class Window:
         self.setup()
         timestamp = time.time()
         while self.run:
-            self.input()
+            self.input(self.buffer_direction[0])
             current = time.time()
             if current - timestamp >= self.snake.delay:
                 self.render()

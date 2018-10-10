@@ -26,7 +26,7 @@ class Snake:
         self.score = 0
         self.score_msg = " Score: 00{} ".format(self.score)
         self.color = Color()
-        self.delay = 0.15
+        self.delay = 0.12
         # self.render_list = []
 
     def init_sake(self):

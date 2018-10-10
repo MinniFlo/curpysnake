@@ -72,4 +72,3 @@ class Color:
 
     def random_color(self):
         return curses.color_pair(random.randrange(1, 25))
-

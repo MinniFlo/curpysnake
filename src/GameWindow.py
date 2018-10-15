@@ -29,7 +29,24 @@ class Window:
         self.pause_win.win.keypad(True)
         self.win.nodelay(True)
         self.snake.init_sake()
-        self.render()
+        self.draw()
+
+    def draw(self):
+        self.win.clear()
+        self.win.box()
+        self.draw_snake()
+        self.win.addstr(0, 2, self.snake.score_msg)
+
+    def draw_snake(self):
+        for body in self.snake.body:
+            body_y, body_x = body.get_coordinates()
+            self.win.addstr(body_y, body_x, body.symbol, body.color)
+
+        head_y, head_x = self.snake.head.get_coordinates()
+        self.win.addstr(head_y, head_x, self.snake.head.symbol, self.snake.head.color)
+
+        food_y, food_x = self.snake.food.get_coordinates()
+        self.win.addstr(food_y, food_x, self.snake.food.symbol)
 
     def change_funs(self, render_fun, input_fun, delay):
         self.render_fun = render_fun
@@ -66,32 +83,24 @@ class Window:
             pass
 
     def render(self):
-        self.win.clear()
-        self.win.box()
-        if self.buffer_direction[0] is not None:
-            self.snake.direction = self.buffer_direction[0]
-            self.snake.head.symbol = self.direction_symbol_map[self.buffer_direction[0]]
-            self.update_buffer(None)
-        self.snake.update_snake_pos()
-        head_y, head_x = self.snake.head.get_coordinates()
-        self.win.addstr(head_y, head_x, self.snake.head.symbol, self.snake.head.color)
         if not self.freeze:
             self.win.clear()
             self.win.box()
 
-        for body in self.snake.body:
-            body_y, body_x = body.get_coordinates()
-            self.win.addstr(body_y, body_x, body.symbol, body.color)
+            if self.buffer_direction[0] is not None:
+                self.snake.direction = self.buffer_direction[0]
+                self.snake.head.symbol = self.direction_symbol_map[self.buffer_direction[0]]
+                self.update_buffer(None)
+            self.snake.update_snake_pos()
+
+            self.draw_snake()
+
+            self.win.addstr(0, 2, self.snake.score_msg)
 
             if self.snake.loose:
                 self.freeze = True
 
 
-        food_y, food_x = self.snake.food.get_coordinates()
-        self.win.addstr(food_y, food_x, self.snake.food.symbol)
-        self.win.addstr(0, 2, self.snake.score_msg)
-        if self.snake.loose:
-            self.run = False
 
     def game_loop(self):
         self.setup()

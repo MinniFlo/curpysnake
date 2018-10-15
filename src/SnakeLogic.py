@@ -79,6 +79,8 @@ class Snake:
 
     def update_tabu_fields(self):
         self.tabu_fields.clear()
+        head_y, head_x = self.head.get_coordinates()
+        self.tabu_fields.add((head_y, head_x))
         for i in self.body:
             body_y, body_x = i.get_coordinates()
             self.tabu_fields.add((body_y, body_x))

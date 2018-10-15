@@ -26,9 +26,7 @@ class Snake:
         self.loose = False
         self.score = 0
         self.score_msg = " Score: 00{} ".format(self.score)
-        self.color = Color()
-        self.delay = 0.12
-        # self.render_list = []
+        self.delay = 0.15
 
     def init_sake(self):
         cur_y, cur_x = self.head.get_coordinates()
@@ -43,7 +41,6 @@ class Snake:
         self.update_food_pos()
 
     def update_snake_pos(self):
-        # self.render_list.clear(
         pre_y, pre_x = self.head.get_coordinates()
         pre_head_color = self.head.color
         self.free_movement(pre_y, pre_x)
@@ -58,16 +55,12 @@ class Snake:
             self.update_tabu_fields()
             self.update_food_pos()
             self.update_score()
-            # self.render_list.extend([self.head, new_body, self.food])
         else:
             moved_body = self.body.pop()
-            # m_y, m_x = moved_body.get_coordinates()
-            # blank = Blank(m_y, m_x)
             moved_body.set_coordinates(pre_y, pre_x)
             moved_body.set_color(pre_head_color)
             self.body.insert(0, moved_body)
             self.update_tabu_fields()
-            # self.render_list.extend([self.head, moved_body, blank])
 
     def update_food_pos(self):
         work_fields = self.all_fields - self.tabu_fields

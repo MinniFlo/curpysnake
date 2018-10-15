@@ -13,6 +13,7 @@ class Window:
         self.pause_win = PauseWin(self)
         self.input_fun = self.input
         self.render_fun = self.render
+        self.delay = self.snake.delay
         self.freeze = True
         self.run = True
         self.dir_changed = False
@@ -25,7 +26,6 @@ class Window:
         curses.noecho()
         curses.curs_set(0)
         self.win.nodelay(True)
-        self.win.box()
         self.snake.init_sake()
         self.render()
 
@@ -91,18 +91,6 @@ class Window:
         if self.snake.loose:
             self.run = False
 
-    # def render_single(self):
-    #     self.snake.direction = self.buffer_direction
-    #     self.snake.head.symbol = self.buffer_symbol
-    #     self.snake.update_snake_pos()
-    #     for i in self.snake.render_list:
-    #         cur_y, cur_x = i.get_coordinates()
-    #         self.win.addch(cur_y, cur_x, ' ')
-    #         self.win.addch(cur_y, cur_x, i.symbol)
-    #     self.win.addstr(0, 2, "Score: {}".format(self.snake.score))
-    #     if self.snake.loose:
-    #         self.run = False
-
     def game_loop(self):
         self.setup()
 
@@ -110,8 +98,7 @@ class Window:
         while self.run:
             self.input_fun(self.buffer_direction[0])
             current = time.time()
-            if current - timestamp >= self.snake.delay:
-                self.render()
+            if current - timestamp >= self.delay:
+                self.render_fun()
                 timestamp = current
-        self.win.getch()
 

@@ -15,7 +15,8 @@ class Direction(Enum):
 class Snake:
     def __init__(self, max_y, max_x):
         self.max_y, self.max_x = max_y, max_x
-        self.head = Head(3, 6, curses.color_pair(1))
+        self.color = Color()
+        self.head = Head(1, 8, curses.color_pair(20))
         self.body = []
         self.food = Food(1, 1)
         self.direction = Direction.RIGHT
@@ -33,7 +34,7 @@ class Snake:
         cur_y, cur_x = self.head.get_coordinates()
         for _ in range(3):
             cur_x -= 2
-            color = self.color.calc_color()
+            color = curses.color_pair(20)
             body = BodyPart(cur_y, cur_x, color)
             self.body.append(body)
         self.fill_all_fields()

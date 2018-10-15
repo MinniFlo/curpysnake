@@ -1,4 +1,5 @@
 from SnakeLogic import *
+from Pause import PauseWin
 import time
 
 
@@ -10,6 +11,9 @@ class Window:
         self.win = curses.newwin(self.max_y, self.max_x, 0, 0)
         self.snake = Snake(self.max_y, self.max_x)
         self.start = False
+        self.pause_win = PauseWin(self)
+        self.input_fun = self.input
+        self.render_fun = self.render
         self.run = True
         self.dir_changed = False
         self.last_key = -1
@@ -25,6 +29,11 @@ class Window:
         self.snake.init_sake()
         self.render()
 
+    def change_funs(self, render_fun, input_fun, delay):
+        self.render_fun = render_fun
+        self.input_fun = input_fun
+        self.delay = delay
+
     def input(self, direction):
         if direction is None:
             direction = self.snake.direction
@@ -37,8 +46,8 @@ class Window:
             self.update_buffer(Direction.LEFT)
         elif cur_key == ord('d') and direction != Direction.LEFT and direction != Direction.RIGHT:
             self.update_buffer(Direction.RIGHT)
-        elif cur_key == 27:
-            self.run = False
+        elif cur_key in [ord('q'), 27]:
+            self.change_funs(self.pause_win.render, self.pause_win.input, 0.01)
         time.sleep(0.001)
 
     def update_buffer(self, direction):

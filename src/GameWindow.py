@@ -10,10 +10,10 @@ class Window:
         self.max_y, self.max_x = 16, 59
         self.win = curses.newwin(self.max_y, self.max_x, 0, 0)
         self.snake = Snake(self.max_y, self.max_x)
-        self.start = False
         self.pause_win = PauseWin(self)
         self.input_fun = self.input
         self.render_fun = self.render
+        self.freeze = True
         self.run = True
         self.dir_changed = False
         self.last_key = -1
@@ -39,6 +39,8 @@ class Window:
             direction = self.snake.direction
         cur_key = self.win.getch()
         if cur_key == ord('w') and direction != Direction.UP and direction != Direction.DOWN:
+        if cur_key != -1 and self.freeze and not self.snake.loose:
+            self.freeze = False
             self.update_buffer(Direction.UP)
         elif cur_key == ord('s') and direction != Direction.UP and direction != Direction.DOWN:
             self.update_buffer(Direction.DOWN)
@@ -71,10 +73,17 @@ class Window:
         self.snake.update_snake_pos()
         head_y, head_x = self.snake.head.get_coordinates()
         self.win.addstr(head_y, head_x, self.snake.head.symbol, self.snake.head.color)
+        if not self.freeze:
+            self.win.clear()
+            self.win.box()
 
         for body in self.snake.body:
             body_y, body_x = body.get_coordinates()
             self.win.addstr(body_y, body_x, body.symbol, body.color)
+
+            if self.snake.loose:
+                self.freeze = True
+
 
         food_y, food_x = self.snake.food.get_coordinates()
         self.win.addstr(food_y, food_x, self.snake.food.symbol)
@@ -96,9 +105,10 @@ class Window:
 
     def game_loop(self):
         self.setup()
+
         timestamp = time.time()
         while self.run:
-            self.input(self.buffer_direction[0])
+            self.input_fun(self.buffer_direction[0])
             current = time.time()
             if current - timestamp >= self.snake.delay:
                 self.render()

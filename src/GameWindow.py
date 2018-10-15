@@ -25,6 +25,8 @@ class Window:
     def setup(self):
         curses.noecho()
         curses.curs_set(0)
+        self.win.keypad(True)
+        self.pause_win.win.keypad(True)
         self.win.nodelay(True)
         self.snake.init_sake()
         self.render()
@@ -38,15 +40,15 @@ class Window:
         if direction is None:
             direction = self.snake.direction
         cur_key = self.win.getch()
-        if cur_key == ord('w') and direction != Direction.UP and direction != Direction.DOWN:
         if cur_key != -1 and self.freeze and not self.snake.loose:
             self.freeze = False
+        if cur_key in [ord('w'), ord('k'), 259] and direction != Direction.UP and direction != Direction.DOWN:
             self.update_buffer(Direction.UP)
-        elif cur_key == ord('s') and direction != Direction.UP and direction != Direction.DOWN:
+        elif cur_key in [ord('s'), ord('j'), 258] and direction != Direction.UP and direction != Direction.DOWN:
             self.update_buffer(Direction.DOWN)
-        elif cur_key == ord('a') and direction != Direction.LEFT and direction != Direction.RIGHT:
+        elif cur_key in [ord('a'), ord('h'), 260] and direction != Direction.LEFT and direction != Direction.RIGHT:
             self.update_buffer(Direction.LEFT)
-        elif cur_key == ord('d') and direction != Direction.LEFT and direction != Direction.RIGHT:
+        elif cur_key in [ord('d'), ord('l'), 261] and direction != Direction.LEFT and direction != Direction.RIGHT:
             self.update_buffer(Direction.RIGHT)
         elif cur_key in [ord('q'), 27]:
             self.change_funs(self.pause_win.render, self.pause_win.input, 0.01)

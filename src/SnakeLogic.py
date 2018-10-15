@@ -29,6 +29,12 @@ class Snake:
         self.delay = 0.15
 
     def init_sake(self):
+        self.head.set_coordinates(1, 8)
+        self.body.clear()
+        self.loose = False
+        self.score = 0
+        self.direction = Direction.RIGHT
+        self.head.symbol = chr(9654)
         cur_y, cur_x = self.head.get_coordinates()
         for _ in range(3):
             cur_x -= 2

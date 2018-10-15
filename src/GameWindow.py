@@ -100,6 +100,11 @@ class Window:
             if self.snake.loose:
                 self.freeze = True
 
+    def reset(self):
+        self.snake.init_sake()
+        self.buffer_direction = {0: Direction.RIGHT, 1: None}
+        self.freeze = True
+        self.draw()
 
 
     def game_loop(self):

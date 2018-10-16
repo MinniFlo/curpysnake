@@ -17,6 +17,8 @@ class Setup:
             self.logic.move = self.logic.walls_movement
         if self.args.uglycolor:
             self.logic.color_fun = self.logic.color_ugly
+        if self.args.randomspeed:
+            self.logic.ugly = True
 
     def create_game(self):
         self.args_stuff()

@@ -98,6 +98,7 @@ class Window:
             if self.snake.loose:
                 self.freeze = True
                 self.delay = 0.01
+            self.delay = self.snake.delay
 
     def reset(self):
         self.snake.init_sake()

@@ -29,6 +29,7 @@ class Snake:
         self.delay = 0.15
         self.move = self.free_movement
         self.color_fun = self.color_good
+        self.ugly = False
 
     def reset_snake(self):
         self.head.set_coordinates(1, 8)
@@ -58,7 +59,8 @@ class Snake:
         self.move(pre_y, pre_x)
         color = self.color_fun()
         self.head.set_color(color)
-        # self.delay = ((random.randrange(1, 75)) / 100) ** 3
+        if self.ugly:
+            self.delay = ((random.randrange(1, 75)) / 100) ** 3
 
         if self.food.get_coordinates() == self.head.get_coordinates():
             new_body = BodyPart(pre_y, pre_x, pre_head_color)

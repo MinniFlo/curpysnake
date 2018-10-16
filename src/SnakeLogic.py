@@ -27,6 +27,7 @@ class Snake:
         self.score = 0
         self.score_msg = " Score: 00{} ".format(self.score)
         self.delay = 0.15
+        self.move = self.free_movement
 
     def reset_snake(self):
         self.head.set_coordinates(1, 8)
@@ -53,7 +54,7 @@ class Snake:
     def update_snake_pos(self):
         pre_y, pre_x = self.head.get_coordinates()
         pre_head_color = self.head.color
-        self.free_movement(pre_y, pre_x)
+        self.move(pre_y, pre_x)
         color = self.color.calc_color()
         # color = self.color.random_color()
         self.head.set_color(color)

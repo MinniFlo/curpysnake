@@ -1,14 +1,20 @@
-from GameWindow import Window
+from GameSetup import Setup
 import os
 import curses
+import argparse
+from functools import partial
 
 
-def main(scr):
-    game = Window(scr)
-    game.game_loop()
+def main(args, scr):
+    gamesetup = Setup(scr)
+    gamesetup.game.game_loop()
     os.system("reset")
 
 
 if __name__ == '__main__':
-    curses.wrapper(main)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("test")
+    args = parser.parse_args()
+
+    curses.wrapper(partial(main, args))
 

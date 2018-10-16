@@ -12,10 +12,11 @@ class Setup:
         self.logic = Snake(self.max_y, self.max_x)
         self.game = Window(self.win, self.logic)
 
-
     def args_stuff(self):
         if self.args.walls:
             self.logic.move = self.logic.walls_movement
+        if self.args.uglycolor:
+            self.logic.color_fun = self.logic.color_ugly
 
     def create_game(self):
         self.args_stuff()

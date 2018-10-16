@@ -28,6 +28,7 @@ class Snake:
         self.score_msg = " Score: 00{} ".format(self.score)
         self.delay = 0.15
         self.move = self.free_movement
+        self.color_fun = self.color_good
 
     def reset_snake(self):
         self.head.set_coordinates(1, 8)
@@ -55,8 +56,7 @@ class Snake:
         pre_y, pre_x = self.head.get_coordinates()
         pre_head_color = self.head.color
         self.move(pre_y, pre_x)
-        color = self.color.calc_color()
-        # color = self.color.random_color()
+        color = self.color_fun()
         self.head.set_color(color)
         # self.delay = ((random.randrange(1, 75)) / 100) ** 3
 
@@ -72,6 +72,12 @@ class Snake:
             moved_body.set_color(pre_head_color)
             self.body.insert(0, moved_body)
             self.update_tabu_fields()
+
+    def color_good(self):
+        return self.color.calc_color()
+
+    def color_ugly(self):
+        return self.color.random_color()
 
     def update_food_pos(self):
         work_fields = self.all_fields - self.tabu_fields

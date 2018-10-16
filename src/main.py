@@ -15,6 +15,7 @@ def main(args, scr):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("-w", "--walls", help="deactivates movement through walls", action="store_true")
+    parser.add_argument("-u", "--uglycolor", help="makes color ugly", action="store_true")
     args = parser.parse_args()
 
     curses.wrapper(partial(main, args))

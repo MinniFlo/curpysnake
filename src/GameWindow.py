@@ -5,11 +5,9 @@ import time
 
 class Window:
 
-    def __init__(self, scr):
-        self.scr = scr
-        self.max_y, self.max_x = 16, 59
-        self.win = curses.newwin(self.max_y, self.max_x, 0, 0)
-        self.snake = Snake(self.max_y, self.max_x)
+    def __init__(self, win, snake):
+        self.win = win
+        self.snake = snake
         self.pause_win = PauseWin(self)
         self.input_fun = self.input
         self.render_fun = self.render

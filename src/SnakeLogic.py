@@ -28,13 +28,17 @@ class Snake:
         self.score_msg = " Score: 00{} ".format(self.score)
         self.delay = 0.15
 
-    def init_sake(self):
+    def reset_snake(self):
         self.head.set_coordinates(1, 8)
         self.body.clear()
         self.loose = False
         self.score = 0
         self.direction = Direction.RIGHT
         self.head.symbol = chr(9654)
+        self.delay = 0.15
+
+    def init_sake(self):
+        self.reset_snake()
         cur_y, cur_x = self.head.get_coordinates()
         for _ in range(3):
             cur_x -= 2

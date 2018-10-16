@@ -30,7 +30,8 @@ class PauseWin:
                 self.win.addstr(i + 1, 2, self.string_map[i])
 
     def resume(self):
-        self.main_win.change_funs(self.main_win.render, self.main_win.input, self.main_win.snake.delay)
+        if not self.main_win.snake.loose:
+            self.main_win.change_funs(self.main_win.render, self.main_win.input, self.main_win.snake.delay)
 
     def restart(self):
         self.main_win.reset()

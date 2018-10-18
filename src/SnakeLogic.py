@@ -63,7 +63,7 @@ class Snake:
         color = self.color_fun()
         self.head.set_color(color)
         if self.ugly:
-            self.delay = ((random.randrange(1, 75)) / 100) ** 3
+            self.delay = ((random.randrange(20, 75)) / 100) ** 3
 
         if self.food.get_coordinates() == self.head.get_coordinates():
             new_body = BodyPart(pre_y, pre_x, pre_head_color)

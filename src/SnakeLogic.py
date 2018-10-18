@@ -1,5 +1,4 @@
 from SnakeParts import *
-from Color import Color
 from enum import Enum
 import curses
 import random
@@ -13,10 +12,10 @@ class Direction(Enum):
 
 
 class Snake:
-    def __init__(self, max_y, max_x):
+    def __init__(self, max_y, max_x, color, color_num):
         self.max_y, self.max_x = max_y, max_x
-        self.color = Color()
-        self.head = Head(1, 8, curses.color_pair(20))
+        self.color = color
+        self.head = Head(1, 8, curses.color_pair(self.color.color_num))
         self.body = []
         self.food = Food(1, 1)
         self.direction = Direction.RIGHT
@@ -28,7 +27,11 @@ class Snake:
         self.score_msg = " Score: 00{} ".format(self.score)
         self.delay = 0.15
         self.move = self.free_movement
-        self.color_fun = self.color_good
+        self.color_fun = self.color.calc_color
+        self.color_fun_map = {1: self.color.blue_red_color, 2: self.color.red_green_color,
+                              3: self.color.green_blue_color, 4: self.color.random_color}
+        if color_num is not None:
+            self.color_fun = self.color_fun_map[color_num]
         self.ugly = False
 
     def reset_snake(self):
@@ -45,7 +48,7 @@ class Snake:
         cur_y, cur_x = self.head.get_coordinates()
         for _ in range(3):
             cur_x -= 2
-            color = curses.color_pair(20)
+            color = curses.color_pair(self.color.color_num)
             body = BodyPart(cur_y, cur_x, color)
             self.body.append(body)
         self.fill_all_fields()
@@ -74,12 +77,6 @@ class Snake:
             moved_body.set_color(pre_head_color)
             self.body.insert(0, moved_body)
             self.update_tabu_fields()
-
-    def color_good(self):
-        return self.color.calc_color()
-
-    def color_ugly(self):
-        return self.color.random_color()
 
     def update_food_pos(self):
         work_fields = self.all_fields - self.tabu_fields

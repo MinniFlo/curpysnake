@@ -11,7 +11,7 @@ class Setup:
         self.max_y, self.max_x = 16, 59
         self.win = curses.newwin(self.max_y, self.max_x, 0, 0)
         self.color = Color(20)
-        self.logic = Snake(self.max_y, self.max_x, self.color, None)
+        self.logic = Snake(self.max_y, self.max_x, self.color, 0)
         self.game = Window(self.win, self.logic)
 
     def args_stuff(self):

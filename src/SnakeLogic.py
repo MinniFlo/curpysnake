@@ -27,11 +27,14 @@ class Snake:
         self.score_msg = " Score: 00{} ".format(self.score)
         self.delay = 0.15
         self.move = self.free_movement
-        self.color_fun = self.color.calc_color
-        self.color_fun_map = {1: self.color.blue_red_color, 2: self.color.red_green_color,
-                              3: self.color.green_blue_color, 4: self.color.random_color}
-        if color_num is not None:
-            self.color_fun = self.color_fun_map[color_num]
+        self.color_fun_map = {
+                0: self.color.calc_color,
+                1: self.color.blue_red_color,
+                2: self.color.red_green_color,
+                3: self.color.green_blue_color,
+                4: self.color.random_color
+        }
+        self.color_fun = self.color_fun_map[color_num]
         self.ugly = False
 
     def reset_snake(self):

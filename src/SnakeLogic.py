@@ -15,7 +15,7 @@ class Snake:
     def __init__(self, max_y, max_x, color, color_num):
         self.max_y, self.max_x = max_y, max_x
         self.color = color
-        self.head = Head(1, 8, curses.color_pair(self.color.color_num))
+        self.head = Head(1, 8)
         self.body = []
         self.food = Food(1, 1)
         self.direction = Direction.RIGHT
@@ -48,9 +48,10 @@ class Snake:
         cur_y, cur_x = self.head.get_coordinates()
         for _ in range(3):
             cur_x -= 2
-            color = curses.color_pair(self.color.color_num)
+            color = self.color_fun()
             body = BodyPart(cur_y, cur_x, color)
             self.body.append(body)
+        self.head.set_color(self.color_fun())
         self.fill_all_fields()
         self.fill_rim_fields()
         self.update_tabu_fields()

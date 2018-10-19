@@ -2,10 +2,9 @@
 
 class Head:
 
-    def __init__(self, y, x, color):
+    def __init__(self, y, x):
         self.y, self.x = (y, x)
         self.symbol = chr(9654)
-        self.color = color
 
     def get_coordinates(self):
         return self.y, self.x

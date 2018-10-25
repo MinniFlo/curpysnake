@@ -19,6 +19,7 @@ class Window:
         self.direction_symbol_map = {Direction.RIGHT: chr(9654), Direction.LEFT: chr(9664),
                                      Direction.UP: chr(9650), Direction.DOWN: chr(9660)}
         self.buffer_direction = {0: Direction.RIGHT, 1: None}
+        self.ugly = False
 
     def setup(self):
         curses.noecho()
@@ -75,7 +76,7 @@ class Window:
             self.buffer_direction[1] = None
         elif self.buffer_direction[0] is None:
             self.buffer_direction[0] = direction
-        elif self.buffer_direction[1] is None:
+        elif self.buffer_direction[1] is None and not self.ugly:
             self.buffer_direction[1] = direction
         else:
             pass

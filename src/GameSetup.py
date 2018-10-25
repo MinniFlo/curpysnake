@@ -27,6 +27,7 @@ class Setup:
 
     def create_game(self):
         self.args_stuff()
+        self.game.ugly = self.logic.ugly
         return self.game
 
     def refresh_game(self, color_num):

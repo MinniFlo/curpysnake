@@ -18,6 +18,8 @@ class Window:
         self.last_key = -1
         self.direction_symbol_map = {Direction.RIGHT: chr(9654), Direction.LEFT: chr(9664),
                                      Direction.UP: chr(9650), Direction.DOWN: chr(9660)}
+        # self.direction_symbol_map = {Direction.RIGHT: 'O', Direction.LEFT: 'O',
+        #                              Direction.UP: 'O', Direction.DOWN: 'O'}
         self.buffer_direction = {0: Direction.RIGHT, 1: None}
 
     def setup(self):

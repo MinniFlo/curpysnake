@@ -15,12 +15,16 @@ class Setup:
         self.game = Window(self.win, self.logic)
 
     def args_stuff(self):
+        # walls
         if self.args.walls:
             self.logic.move = self.logic.walls_movement
+        # ugly
         if self.args.uglycolor:
             self.refresh_game(4)
+        # random speed
         if self.args.randomspeed:
             self.logic.ugly = True
+        # color stuff
         if self.args.color is not None:
             self.color = Color(0)
             self.refresh_game(self.args.color)

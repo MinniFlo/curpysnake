@@ -6,7 +6,7 @@ class Color:
 
     def __init__(self, color_num):
         color_255 = 1000
-        color_0 = 0
+        color_0 = 392
         color_224 = 878
         color_191 = 749
         color_128 = 502

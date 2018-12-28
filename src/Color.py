@@ -66,8 +66,6 @@ class Color:
             curses.init_pair(i, i+8, -1)
 
         self.color_num = color_num
-        self.display_num = 0
-        self.color_cycle = 0
         self.blue_red_map = {0: 5, 1: 6, 2: 7, 3: 8, 4: 9, 5: 10, 6: 11, 7: 12, 8: 13}
         self.red_green_map = {0: 13, 1: 14, 2: 15, 3: 16, 4: 17, 5: 18, 6: 19, 7: 20, 8: 21}
         self.green_blue_map = {0: 21, 1: 22, 2: 23, 3: 24, 4: 1, 5: 2, 6: 3, 7: 4, 8: 5}

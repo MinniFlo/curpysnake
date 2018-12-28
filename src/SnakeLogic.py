@@ -39,6 +39,7 @@ class Snake:
         self.body.clear()
         self.loose = False
         self.score = 0
+        self.score_msg = " Score: 00{} ".format(self.score)
         self.direction = Direction.RIGHT
         self.head.symbol = chr(9654)
         self.delay = 0.15

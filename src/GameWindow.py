@@ -14,7 +14,7 @@ class Window:
         self.delay = self.snake.delay
         self.freeze = True
         self.run = True
-        self.last_key = -1
+        self.cycle = 56
         self.direction_symbol_map = {Direction.RIGHT: chr(9654), Direction.LEFT: chr(9664),
                                      Direction.UP: chr(9650), Direction.DOWN: chr(9660)}
         # self.direction_symbol_map = {Direction.RIGHT: 'O', Direction.LEFT: 'O',
@@ -58,17 +58,21 @@ class Window:
         cur_key = self.win.getch()
         if cur_key != -1 and self.freeze and not self.snake.loose:
             self.freeze = False
-        if cur_key in [ord('w'), ord('k'), 259] and direction != Direction.UP and direction != Direction.DOWN:
-            self.update_buffer(Direction.UP)
-        elif cur_key in [ord('s'), ord('j'), 258] and direction != Direction.UP and direction != Direction.DOWN:
-            self.update_buffer(Direction.DOWN)
-        elif cur_key in [ord('a'), ord('h'), 260] and direction != Direction.LEFT and direction != Direction.RIGHT:
-            self.update_buffer(Direction.LEFT)
-        elif cur_key in [ord('d'), ord('l'), 261] and direction != Direction.LEFT and direction != Direction.RIGHT:
-            self.update_buffer(Direction.RIGHT)
-        elif cur_key in [ord('q'), 27]:
+
+        # bot_movement input
+        self.bot_input()
+
+        if cur_key in [ord('q'), 27]:
             self.change_funs(self.pause_win.render, self.pause_win.input, 0.01)
         time.sleep(0.001)
+
+    def bot_input(self):
+        y, x = self.snake.head.get_coordinates()
+
+        if x == self.cycle:
+            self.update_buffer(Direction.DOWN)
+            self.update_buffer(Direction.RIGHT)
+            self.cycle = (self.cycle - 4) % 56 + 2
 
     def update_buffer(self, direction):
         if direction is None:
@@ -95,6 +99,8 @@ class Window:
             self.draw_snake()
 
             self.win.addstr(0, 2, self.snake.score_msg)
+            self.win.addstr(0, 15, str(self.snake.head.get_coordinates()))
+            self.win.addstr(0, 22, str(self.cycle))
 
             if self.snake.loose:
                 self.freeze = True

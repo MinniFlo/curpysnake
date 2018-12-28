@@ -25,7 +25,7 @@ class Snake:
         self.loose = False
         self.score = 0
         self.score_msg = " Score: 00{} ".format(self.score)
-        self.delay = 0.08
+        self.delay = 0.15
         self.move = self.free_movement
         self.color_fun = self.color.calc_color
         self.color_fun_map = {1: self.color.blue_red_color, 2: self.color.red_green_color,
@@ -42,7 +42,7 @@ class Snake:
         self.score_msg = " Score: 00{} ".format(self.score)
         self.direction = Direction.RIGHT
         self.head.symbol = chr(9654)
-        self.delay = 0.15
+        self.delay = 0.03
 
     def init_sake(self):
         self.reset_snake()

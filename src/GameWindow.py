@@ -14,12 +14,14 @@ class Window:
         self.delay = self.snake.delay
         self.freeze = True
         self.run = True
-        self.cycle = 56
         self.direction_symbol_map = {Direction.RIGHT: chr(9654), Direction.LEFT: chr(9664),
                                      Direction.UP: chr(9650), Direction.DOWN: chr(9660)}
         # self.direction_symbol_map = {Direction.RIGHT: 'O', Direction.LEFT: 'O',
         #                              Direction.UP: 'O', Direction.DOWN: 'O'}
         self.buffer_direction = {0: None, 1: None}
+        # botstuff
+        self.cycle = 56
+
 
     def setup(self):
         curses.noecho()
@@ -37,6 +39,9 @@ class Window:
         self.win.addstr(0, 2, self.snake.score_msg)
 
     def draw_snake(self):
+        food_y, food_x = self.snake.food.get_coordinates()
+        self.win.addstr(food_y, food_x, self.snake.food.symbol)
+
         for body in self.snake.body:
             body_y, body_x = body.get_coordinates()
             self.win.addstr(body_y, body_x, body.symbol, body.color)
@@ -44,8 +49,7 @@ class Window:
         head_y, head_x = self.snake.head.get_coordinates()
         self.win.addstr(head_y, head_x, self.snake.head.symbol, self.snake.head.color)
 
-        food_y, food_x = self.snake.food.get_coordinates()
-        self.win.addstr(food_y, food_x, self.snake.food.symbol)
+
 
     def change_funs(self, render_fun, input_fun, delay):
         self.render_fun = render_fun
@@ -99,10 +103,8 @@ class Window:
             self.draw_snake()
 
             self.win.addstr(0, 2, self.snake.score_msg)
-            self.win.addstr(0, 15, str(self.snake.head.get_coordinates()))
-            self.win.addstr(0, 22, str(self.cycle))
 
-            if self.snake.loose:
+            if self.snake.loose or self.snake.win:
                 self.freeze = True
                 self.delay = 0.01
             self.delay = self.snake.delay

@@ -23,6 +23,7 @@ class Snake:
         self.rim_fields = set()
         self.all_fields = set()
         self.loose = False
+        self.win = False
         self.score = 0
         self.score_msg = " Score: 00{} ".format(self.score)
         self.delay = 0.15
@@ -42,7 +43,7 @@ class Snake:
         self.score_msg = " Score: 00{} ".format(self.score)
         self.direction = Direction.RIGHT
         self.head.symbol = chr(9654)
-        self.delay = 0.03
+        self.delay = 0.0001
 
     def init_sake(self):
         self.reset_snake()
@@ -82,11 +83,14 @@ class Snake:
     def update_food_pos(self):
         work_fields = self.all_fields - self.tabu_fields
         work_fields = list(work_fields)
-        cur_y, cur_x = random.choice(work_fields)
-        self.food.set_coordinates(cur_y, cur_x)
-        if self.delay > 0.1:
-            if self.score % 5 == 0:
-                self.delay -= 0.01
+        if work_fields:
+            cur_y, cur_x = random.choice(work_fields)
+            self.food.set_coordinates(cur_y, cur_x)
+            if self.delay > 0.1:
+                if self.score % 5 == 0:
+                    self.delay -= 0.01
+        else:
+            self.win = True
 
     def update_tabu_fields(self):
         self.tabu_fields.clear()

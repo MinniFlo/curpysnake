@@ -64,19 +64,34 @@ class Window:
             self.freeze = False
 
         # bot_movement input
-        self.bot_input()
+        self.flood_bot_input()
 
         if cur_key in [ord('q'), 27]:
             self.change_funs(self.pause_win.render, self.pause_win.input, 0.01)
         time.sleep(0.001)
 
-    def bot_input(self):
+    def easy_bot_input(self):
         y, x = self.snake.head.get_coordinates()
-
         if x == self.cycle:
             self.update_buffer(Direction.DOWN)
             self.update_buffer(Direction.RIGHT)
             self.cycle = (self.cycle - 4) % 56 + 2
+
+    def medium_bot_input(self):
+        y, x = self.snake.head.get_coordinates()
+        if x == 56 and self.snake.direction == Direction.RIGHT:
+            self.update_buffer(Direction.DOWN)
+            self.update_buffer(Direction.LEFT)
+        elif x == 4 and y != 14 and self.snake.direction == Direction.LEFT:
+            self.update_buffer(Direction.DOWN)
+            self.update_buffer(Direction.RIGHT)
+        elif x == 2 and y == 14:
+            self.update_buffer(Direction.UP)
+        elif x == 2 and y == 1:
+            self.update_buffer(Direction.RIGHT)
+
+    def flood_bot_input(self):
+        pass
 
     def update_buffer(self, direction):
         if direction is None:

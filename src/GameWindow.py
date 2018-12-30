@@ -64,7 +64,7 @@ class Window:
             self.freeze = False
 
         # bot_movement input
-        self.medium_bot_input()
+        self.easy_bot_input()
 
         if cur_key in [ord('q'), 27]:
             self.change_funs(self.pause_win.render, self.pause_win.input, 0.01)

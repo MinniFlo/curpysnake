@@ -43,7 +43,7 @@ class Snake:
         self.score_msg = " Score: 00{} ".format(self.score)
         self.direction = Direction.RIGHT
         self.head.symbol = chr(9654)
-        self.delay = 0.0001
+        self.delay = 0.01
 
     def init_sake(self):
         self.reset_snake()

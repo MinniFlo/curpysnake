@@ -1,2 +1,47 @@
-= curpysnake
-snake game written in python(curses)
+:imagesdir: ./images
+
+
+= curpysnakes
+
+== How to start
+
+run `python ./snake/src/main.py`
+
+== How to control
+
+[option="header", cols="2h, 2, 2, 2"]
+|===
+|description h|option 1 h|option 2 h|option 3
+|Navigation  |w,a,s,d  |h,j,k,l  |arrow Keys
+|Menue |q |esc |-
+|Confirm |space |enter |-
+|===
+
+== Available Flags
+
+`-h, --help` +
+
+* shows the help message
+
+`-w, --walls` +
+
+* disables the movement over the boundary line
+
+`-c, --color` +
+
+* restricts the color cycle to two colors
+
+`-u. --uglycolor`
+
+* makes color cycle ugly
+
+`-r, --randomspeed`
+
+* makes speed random
+
+== Sreenshots
+
+image::snake1.png[align=center]
+image::snake2.png[align=center]
+
+

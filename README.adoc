@@ -13,7 +13,7 @@ run `python ./snake/src/main.py`
 |===
 |description h|option 1 h|option 2 h|option 3
 |Navigation  |w,a,s,d  |h,j,k,l  |arrow Keys
-|Menue |q |esc |-
+|Menu |q |esc |-
 |Confirm |space |enter |-
 |===
 

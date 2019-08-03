@@ -19,9 +19,6 @@ class Window:
         # self.direction_symbol_map = {Direction.RIGHT: 'O', Direction.LEFT: 'O',
         #                              Direction.UP: 'O', Direction.DOWN: 'O'}
         self.buffer_direction = {0: None, 1: None}
-        # botstuff
-        self.cycle = 56
-
 
     def setup(self):
         curses.noecho()

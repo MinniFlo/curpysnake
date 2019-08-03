@@ -88,7 +88,6 @@ class Window:
 
     def render(self):
         if not self.freeze:
-
             # evaluate direction buffer if a new direction is on the stack
             if self.buffer_direction[0] is not None:
                 # update snake direction
@@ -106,7 +105,7 @@ class Window:
 
             self.win.addstr(0, 2, self.snake.score_msg)
 
-            if self.snake.loose or self.snake.win:
+            if self.snake.loose:
                 self.freeze = True
                 self.delay = 0.01
             self.delay = self.snake.delay

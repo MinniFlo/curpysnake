@@ -26,7 +26,7 @@ class Snake:
         self.win = False
         self.score = 0
         self.score_msg = " Score: 00{} ".format(self.score)
-        self.delay = 0.15
+        self.delay = 0.5
         self.move = self.free_movement
         self.color_fun = self.color.calc_color
         self.color_fun_map = {1: self.color.blue_red_color, 2: self.color.red_green_color,

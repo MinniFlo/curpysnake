@@ -66,11 +66,11 @@ class Window:
             self.freeze = False
 
         # bot_movement input
-        self.path_bot_input()
+        self.flood_bot_input()
 
         if cur_key in [ord('q'), 27]:
             self.change_funs(self.pause_win.render, self.pause_win.input, 0.01)
-        time.sleep(0.001)
+        time.sleep(0.01)
 
     # bots -------------------------------------------------------------------------------------------------------------
 
@@ -88,7 +88,56 @@ class Window:
             self.update_buffer(Direction.RIGHT)
 
     def flood_bot_input(self):
-        pass
+        # start coordinates
+        cur_y, cur_x = self.snake.head.get_coordinates()
+        # target coordinates
+        food_y, food_x = self.snake.food.get_coordinates()
+        # saves all reachable fields. the key is the distance
+        step_dict = {0: {(cur_y, cur_x)}}
+        # flag for the while loop
+        target_reached = False
+        # counts the steps
+        step = 1
+        while not target_reached:
+            # inits new set for the new steps
+            step_dict[step] = set()
+            # iter over the last reached fields
+            for (y, x) in step_dict[step - 1]:
+                # all neighbor fields
+                to_check_tups = {(y - 1, x), (y + 1, x), (y, x - 1), (y, x + 1)}
+                for tup in to_check_tups:
+                    # sorts out all not reachable fields
+                    if tup not in self.snake.tabu_fields:
+                        step_dict[step].add(tup)
+            # if the target is in the reachable fields the loop stops
+            if (food_y, food_x) in step_dict[step]:
+                target_reached = True
+            # else there will be another step
+            else:
+                step += 1
+        # saves the path to the target
+        final_path = [(food_y, food_x)]
+        # the first steps that will be worked on are the previous to the target step
+        step -= 1
+        while step > 0:
+            work_y, work_x = final_path[0]
+            to_find_tups = [(work_y - 1, work_x), (work_y + 1, work_x), (work_y, work_x - 1), (work_y, work_x + 1)]
+            for tup in to_find_tups:
+                if tup in step_dict[step]:
+                    final_path.insert(0, tup)
+                    break
+            step -= 1
+        (fin_y, fin_x) = final_path[0]
+        if fin_y == cur_y:
+            if fin_x > cur_x:
+                self.update_buffer(Direction.RIGHT)
+            else:
+                self.update_buffer(Direction.LEFT)
+        else:
+            if fin_y > cur_y:
+                self.update_buffer(Direction.DOWN)
+            else:
+                self.update_buffer(Direction.UP)
 
     # ------------------------------------------------------------------------------------------------------------------
 

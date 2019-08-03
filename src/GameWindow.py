@@ -49,7 +49,12 @@ class Window:
         head_y, head_x = self.snake.head.get_coordinates()
         self.win.addstr(head_y, head_x, self.snake.head.symbol, self.snake.head.color)
 
-
+    def clear_snake(self):
+        for body in self.snake.body:
+            y, x = body.get_coordinates()
+            self.win.addstr(y, x, ' ')
+        pre_y, pre_x = self.snake.head.get_coordinates()
+        self.win.addstr(pre_y, pre_x, ' ')
 
     def change_funs(self, render_fun, input_fun, delay):
         self.render_fun = render_fun
@@ -106,13 +111,18 @@ class Window:
 
     def render(self):
         if not self.freeze:
-            self.win.clear()
-            self.win.box()
 
+            # evaluate direction buffer if a new direction is on the stack
             if self.buffer_direction[0] is not None:
+                # update snake direction
                 self.snake.direction = self.buffer_direction[0]
+                # update snake head char
                 self.snake.head.symbol = self.direction_symbol_map[self.buffer_direction[0]]
+                # delete the processed direction from the buffer
                 self.update_buffer(None)
+
+            self.clear_snake()
+
             self.snake.update_snake_pos()
 
             self.draw_snake()

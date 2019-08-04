@@ -123,8 +123,14 @@ class Window:
                 to_check_tups = {(y - 1, x), (y + 1, x), (y, x - 2), (y, x + 2)}
                 for tup in to_check_tups:
                     # sorts out all not reachable fields
-                    if tup not in self.snake.tabu_fields:
-                        step_dict[step].add(tup)
+                    if step == 1:
+                        if tup not in self.snake.tabu_fields:
+                            step_dict[step].add(tup)
+                    else:
+                        if tup not in self.snake.tabu_fields and tup not in step_dict[step - 2]:
+                            step_dict[step].add(tup)
+            # if no path to the target was found bot needs to idle
+            # todo: idle
             # if the target is in the reachable fields the loop stops
             if (food_y, food_x) in step_dict[step]:
                 target_reached = True
@@ -203,9 +209,10 @@ class Window:
 
         timestamp = time.time()
         while self.run:
-            self.input_fun(self.buffer_direction[0])
             current = time.time()
             if current - timestamp >= self.delay:
+                # the bot only needs to input once before the render
+                self.input_fun(self.buffer_direction[0])
                 self.render_fun()
                 timestamp = current
 

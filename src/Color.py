@@ -12,6 +12,7 @@ class Color:
         color_128 = 502
         curses.use_default_colors()
 
+        # snake colors
         curses.init_color(9, color_0, color_255, color_255)
         curses.init_color(10, color_0, color_224, color_255)
         curses.init_color(11, color_0, color_191, color_255)
@@ -37,30 +38,10 @@ class Color:
         curses.init_color(31, color_0, color_255, color_191)
         curses.init_color(32, color_0, color_255, color_224)
 
-        # curses.init_pair(1, 9, -1)
-        # curses.init_pair(2, 10, -1)
-        # curses.init_pair(3, 11, -1)
-        # curses.init_pair(4, 12, -1)
-        # curses.init_pair(5, 13, -1)   # blue
-        # curses.init_pair(6, 14, -1)
-        # curses.init_pair(7, 15, -1)
-        # curses.init_pair(8, 16, -1)
-        # curses.init_pair(9, 17, -1)
-        # curses.init_pair(10, 18, -1)
-        # curses.init_pair(11, 19, -1)
-        # curses.init_pair(12, 20, -1)
-        # curses.init_pair(13, 21, -1)  # red
-        # curses.init_pair(14, 22, -1)
-        # curses.init_pair(15, 23, -1)
-        # curses.init_pair(16, 24, -1)
-        # curses.init_pair(17, 25, -1)
-        # curses.init_pair(18, 26, -1)
-        # curses.init_pair(19, 27, -1)
-        # curses.init_pair(20, 28, -1)
-        # curses.init_pair(21, 29, -1)  # green
-        # curses.init_pair(22, 30, -1)
-        # curses.init_pair(23, 31, -1)
-        # curses.init_pair(24, 32, -1)
+        # path color
+        curses.init_color(33, color_0, color_0, color_0)
+        # init path color pair
+        curses.init_pair(25, 33, -1)
 
         for i in range(1, 25):
             curses.init_pair(i, i+8, -1)
@@ -71,6 +52,7 @@ class Color:
         self.red_green_map = {0: 13, 1: 14, 2: 15, 3: 16, 4: 17, 5: 18, 6: 19, 7: 20, 8: 21}
         self.green_blue_map = {0: 21, 1: 22, 2: 23, 3: 24, 4: 1, 5: 2, 6: 3, 7: 4, 8: 5}
         self.map_reverse = False
+        self.cycle_length = 5
 
     def blue_red_color(self):
         if self.color_cycle == 0:
@@ -114,7 +96,7 @@ class Color:
     def calc_color(self):
         if self.color_cycle == 0:
             self.color_num = (self.color_num % 24) + 1
-        self.color_cycle = (self.color_cycle + 1) % 3
+        self.color_cycle = (self.color_cycle + 1) % self.cycle_length
         return curses.color_pair(self.color_num)
 
     def random_color(self):

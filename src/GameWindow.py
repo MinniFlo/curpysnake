@@ -9,6 +9,7 @@ class Window:
         self.win = win
         self.snake = snake
         self.pause_win = PauseWin(self)
+        self.debug_win = curses.newwin(16, 40, 0, 60)
         self.input_fun = self.input
         self.render_fun = self.render
         self.delay = self.snake.delay
@@ -104,10 +105,15 @@ class Window:
             self.update_buffer(Direction.RIGHT)
 
     def flood_bot_input(self):
+        self.debug_win.clear()
         # start coordinates
         cur_y, cur_x = self.snake.head.get_coordinates()
+        #debug
+        self.debug_win.addstr(1, 1, "Head:\t\t{}, {}".format(cur_y, cur_x))
         # target coordinates
         food_y, food_x = self.snake.food.get_coordinates()
+        #debug
+        self.debug_win.addstr(3, 1, "target:\t{}, {}".format(food_y, food_x))
         # saves all reachable fields. the key is the distance
         step_dict = {0: {(cur_y, cur_x)}}
         # flag for the while loop
@@ -131,6 +137,9 @@ class Window:
                             step_dict[step].add(tup)
             # if no path to the target was found bot needs to idle
             # todo: idle
+            if step >= 150:
+                self.idle_bot()
+                return
             # if the target is in the reachable fields the loop stops
             if (food_y, food_x) in step_dict[step]:
                 target_reached = True
@@ -151,16 +160,29 @@ class Window:
                     break
             step -= 1
         (fin_y, fin_x) = self.bot_path[0]
+        #debug
+        self.debug_win.addstr(2, 1, "next:\t\t{}, {}".format(fin_y, fin_x))
         if fin_y == cur_y:
             if fin_x > cur_x:
                 self.update_buffer(Direction.RIGHT)
+                #debug
+                self.debug_win.addstr(4, 1, "next Dir:\tRIGHT")
             else:
                 self.update_buffer(Direction.LEFT)
+                #debug
+                self.debug_win.addstr(4, 1, "next Dir:\tLEFT")
         else:
             if fin_y > cur_y:
                 self.update_buffer(Direction.DOWN)
+                #debug
+                self.debug_win.addstr(4, 1, "next Dir:\tDOWN")
             else:
                 self.update_buffer(Direction.UP)
+                #debug
+                self.debug_win.addstr(4, 1, "next Dir:\tUP")
+
+    def idle_bot(self):
+        pass
 
     # ------------------------------------------------------------------------------------------------------------------
 
@@ -197,6 +219,7 @@ class Window:
                 self.freeze = True
                 self.delay = 0.01
             self.delay = self.snake.delay
+            self.debug_win.refresh()
 
     def reset(self):
         self.snake.init_sake()

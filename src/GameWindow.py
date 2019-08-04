@@ -19,6 +19,12 @@ class Window:
         # self.direction_symbol_map = {Direction.RIGHT: 'O', Direction.LEFT: 'O',
         #                              Direction.UP: 'O', Direction.DOWN: 'O'}
         self.buffer_direction = {0: None, 1: None}
+        # the path the bot has found
+        self.bot_path = []
+        # the last path that was drawn
+        self.last_bot_path = []
+        # bot path char
+        self.path_char = chr(8728)
 
     def setup(self):
         curses.noecho()
@@ -36,20 +42,30 @@ class Window:
         self.win.addstr(0, 2, self.snake.score_msg)
 
     def draw_snake(self):
+        # draw bot path
+        for y, x in self.bot_path:
+            self.win.addstr(y, x, self.path_char, curses.color_pair(25))
+        self.last_bot_path = self.bot_path.copy()
+        # draw food
         food_y, food_x = self.snake.food.get_coordinates()
         self.win.addstr(food_y, food_x, self.snake.food.symbol)
-
+        # draw snake body
         for body in self.snake.body:
             body_y, body_x = body.get_coordinates()
             self.win.addstr(body_y, body_x, body.symbol, body.color)
-
+        # draw snake head
         head_y, head_x = self.snake.head.get_coordinates()
         self.win.addstr(head_y, head_x, self.snake.head.symbol, self.snake.head.color)
 
     def clear_snake(self):
+        # clear last path
+        for y, x in self.last_bot_path:
+            self.win.addstr(y, x, ' ')
+        # clear body
         for body in self.snake.body:
             y, x = body.get_coordinates()
             self.win.addstr(y, x, ' ')
+        # clear head
         pre_y, pre_x = self.snake.head.get_coordinates()
         self.win.addstr(pre_y, pre_x, ' ')
 

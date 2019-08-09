@@ -164,10 +164,86 @@ class Window:
         next_tup = self.bot_path[0]
         next_direction = self.tup_to_direction(self.snake.direction, (cur_y, cur_x), next_tup)
         self.update_buffer(next_direction)
+
+    def idle_bot(self):
+        head_tup = self.snake.head.get_coordinates()
+        tabu_fields = self.snake.tabu_fields
+        if len(self.idle_path) == 0:
+            # saves the 4 idle paths
+            results = []
+
+            for i in range(4):
+                # safes the current path
+                cur_list = []
+                # index for the offset dict
+                tup_dict_index = (i - 1) % 4
+                # alternates between -1, 0, 1 and determines the cur_dir_index
+                offset_pointer = -1
+                # shows in witch direction the offset_pointer evolves
+                offset_dir_flag = True
+                work_tup = head_tup
+                if tuple(map(self.add_tup, work_tup, self.tup_dir[tup_dict_index])) in tabu_fields:
+                    tup_dict_index = (tup_dict_index + 2) % 4
+                    offset_pointer = 1
+                    offset_dir_flag = False
+
+                fields_left = True
+                while fields_left:
+                    if offset_pointer != 0:
+                        next_field = tuple(map(self.add_tup, work_tup, self.tup_dir[tup_dict_index]))
+                        if next_field in tabu_fields or \
+                                tuple(map(self.add_tup, next_field, self.tup_dir[i])) in tabu_fields:
+                            tup_dict_index = i
+                            if offset_pointer == -1:
+                                offset_dir_flag = True
+                            else:
+                                offset_dir_flag = False
+                            offset_pointer = 0
+                        else:
+                            cur_list.append(next_field)
+                            work_tup = next_field
+                    else:
+                        next_field = tuple(map(self.add_tup, work_tup, self.tup_dir[tup_dict_index]))
+                        if next_field in tabu_fields:
+                            fields_left = False
+                        else:
+                            if offset_dir_flag:
+                                offset_pointer += 1
+                                # distance_buffer = (2, 2)
+                            else:
+                                offset_pointer -= 1
+                                # distance_buffer = (1, 1)
+                            tup_dict_index = (tup_dict_index + offset_pointer) % 4
+                            cur_list.append(next_field)
+                            work_tup = next_field
+
+                results.append(cur_list)
+
+            # calculate the longest idle path
+            best_path = []
+            for path in results:
+                if len(path) > len(best_path):
+                    best_path = path
+
+            if len(best_path) == 0:
+                # todo: emergency_idle
+                self.update_buffer(self.snake.direction)
+                return
             else:
-                self.update_buffer(Direction.LEFT)
-                #debug
-                self.debug_win.addstr(4, 1, "next Dir:\tLEFT")
+                self.idle_path = best_path
+
+        next_tup = self.idle_path.pop(0)
+        next_direction = self.tup_to_direction(self.snake.direction, head_tup, next_tup)
+        self.update_buffer(next_direction)
+
+    @staticmethod
+    def add_tup(tup_val1, tup_val2):
+        return tup_val1 + tup_val2
+
+    @staticmethod
+    def mul_tup(tup_val, fac_val):
+        return tup_val * fac_val
+
     @staticmethod
     def tup_to_direction(cur_direction, start, target):
         (cur_y, cur_x) = start

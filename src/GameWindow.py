@@ -26,6 +26,10 @@ class Window:
         self.last_bot_path = []
         # bot path char
         self.path_char = chr(8728)
+        # idle bot path
+        self.idle_path = []
+        # idle bot counter direction
+        self.tup_dir = {0: (0, 2), 1: (1, 0), 2: (0, -2), 3: (-1, 0)}
 
     def setup(self):
         curses.noecho()
@@ -83,7 +87,7 @@ class Window:
             self.freeze = False
 
         # bot_movement input
-        self.flood_bot_input()
+        self.flood_bot()
 
         if cur_key in [ord('q'), 27]:
             self.change_funs(self.pause_win.render, self.pause_win.input, 0.01)
@@ -91,7 +95,7 @@ class Window:
 
     # bots -------------------------------------------------------------------------------------------------------------
 
-    def path_bot_input(self):
+    def path_bot(self):
         y, x = self.snake.head.get_coordinates()
         if x == 56 and self.snake.direction == Direction.RIGHT:
             self.update_buffer(Direction.DOWN)
@@ -104,16 +108,12 @@ class Window:
         elif x == 2 and y == 1:
             self.update_buffer(Direction.RIGHT)
 
-    def flood_bot_input(self):
-        self.debug_win.clear()
+    def flood_bot(self):
+        # A* algorithm
         # start coordinates
         cur_y, cur_x = self.snake.head.get_coordinates()
-        #debug
-        self.debug_win.addstr(1, 1, "Head:\t\t{}, {}".format(cur_y, cur_x))
         # target coordinates
         food_y, food_x = self.snake.food.get_coordinates()
-        #debug
-        self.debug_win.addstr(3, 1, "target:\t{}, {}".format(food_y, food_x))
         # saves all reachable fields. the key is the distance
         step_dict = {0: {(cur_y, cur_x)}}
         # flag for the while loop
@@ -136,7 +136,6 @@ class Window:
                         if tup not in self.snake.tabu_fields and tup not in step_dict[step - 2]:
                             step_dict[step].add(tup)
             # if no path to the target was found bot needs to idle
-            # todo: idle
             if step >= 150:
                 self.idle_bot()
                 return
@@ -146,11 +145,13 @@ class Window:
             # else there will be another step
             else:
                 step += 1
+        self.idle_path.clear()
         self.bot_path.clear()
         # saves the path to the target
         self.bot_path = [(food_y, food_x)]
-        # the first steps that will be worked on are the previous to the target step
+        # the first steps that will be worked on are the previous of the target step
         step -= 1
+        # build the path from the target to the start backwards
         while step > 0:
             work_y, work_x = self.bot_path[0]
             to_find_tups = [(work_y - 1, work_x), (work_y + 1, work_x), (work_y, work_x - 2), (work_y, work_x + 2)]
@@ -159,30 +160,32 @@ class Window:
                     self.bot_path.insert(0, tup)
                     break
             step -= 1
-        (fin_y, fin_x) = self.bot_path[0]
-        #debug
-        self.debug_win.addstr(2, 1, "next:\t\t{}, {}".format(fin_y, fin_x))
-        if fin_y == cur_y:
-            if fin_x > cur_x:
-                self.update_buffer(Direction.RIGHT)
-                #debug
-                self.debug_win.addstr(4, 1, "next Dir:\tRIGHT")
+        # translates the next field to got to into a direction
+        next_tup = self.bot_path[0]
+        next_direction = self.tup_to_direction(self.snake.direction, (cur_y, cur_x), next_tup)
+        self.update_buffer(next_direction)
             else:
                 self.update_buffer(Direction.LEFT)
                 #debug
                 self.debug_win.addstr(4, 1, "next Dir:\tLEFT")
-        else:
-            if fin_y > cur_y:
-                self.update_buffer(Direction.DOWN)
-                #debug
-                self.debug_win.addstr(4, 1, "next Dir:\tDOWN")
+    @staticmethod
+    def tup_to_direction(cur_direction, start, target):
+        (cur_y, cur_x) = start
+        (next_y, next_x) = target
+        if next_y == cur_y:
+            if next_x > cur_x:
+                if cur_direction != Direction.RIGHT:
+                    return Direction.RIGHT
             else:
-                self.update_buffer(Direction.UP)
-                #debug
-                self.debug_win.addstr(4, 1, "next Dir:\tUP")
-
-    def idle_bot(self):
-        pass
+                if cur_direction != Direction.LEFT:
+                    return Direction.LEFT
+        else:
+            if next_y > cur_y:
+                if cur_direction != Direction.DOWN:
+                    return Direction.DOWN
+            else:
+                if cur_direction != Direction.UP:
+                    return Direction.UP
 
     # ------------------------------------------------------------------------------------------------------------------
 
@@ -219,7 +222,6 @@ class Window:
                 self.freeze = True
                 self.delay = 0.01
             self.delay = self.snake.delay
-            self.debug_win.refresh()
 
     def reset(self):
         self.snake.init_sake()
@@ -238,4 +240,3 @@ class Window:
                 self.input_fun(self.buffer_direction[0])
                 self.render_fun()
                 timestamp = current
-

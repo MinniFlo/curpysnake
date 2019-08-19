@@ -114,6 +114,7 @@ class Window:
         cur_y, cur_x = self.snake.head.get_coordinates()
         # target coordinates
         food_y, food_x = self.snake.food.get_coordinates()
+        tabu_fields = self.snake.tabu_fields
         # saves all reachable fields. the key is the distance
         step_dict = {0: {(cur_y, cur_x)}}
         # flag for the while loop
@@ -124,17 +125,17 @@ class Window:
             # inits new set for the new steps
             step_dict[step] = set()
             # iter over the last reached fields
-            for (y, x) in step_dict[step - 1]:
+            for tup in step_dict[step - 1]:
                 # all neighbor fields
-                to_check_tups = {(y - 1, x), (y + 1, x), (y, x - 2), (y, x + 2)}
-                for tup in to_check_tups:
+                to_check_tups = self.neighbors(tup)
+                for neighbor in to_check_tups:
                     # sorts out all not reachable fields
                     if step == 1:
-                        if tup not in self.snake.tabu_fields:
-                            step_dict[step].add(tup)
+                        if neighbor not in tabu_fields:
+                            step_dict[step].add(neighbor)
                     else:
-                        if tup not in self.snake.tabu_fields and tup not in step_dict[step - 2]:
-                            step_dict[step].add(tup)
+                        if neighbor not in tabu_fields and neighbor not in step_dict[step - 2]:
+                            step_dict[step].add(neighbor)
             # if no path to the target was found bot needs to idle
             if step >= 150:
                 self.idle_bot()
@@ -145,6 +146,7 @@ class Window:
             # else there will be another step
             else:
                 step += 1
+
         self.idle_path.clear()
         self.bot_path.clear()
         # saves the path to the target
@@ -153,12 +155,14 @@ class Window:
         step -= 1
         # build the path from the target to the start backwards
         while step > 0:
-            work_y, work_x = self.bot_path[0]
-            to_find_tups = [(work_y - 1, work_x), (work_y + 1, work_x), (work_y, work_x - 2), (work_y, work_x + 2)]
+            work_tup = self.bot_path[0]
+            to_find_tups = self.neighbors(work_tup)
+            candidate = ()
             for tup in to_find_tups:
                 if tup in step_dict[step]:
-                    self.bot_path.insert(0, tup)
+                    candidate = tup
                     break
+            self.bot_path.insert(0, candidate)
             step -= 1
         # translates the next field to got to into a direction
         next_tup = self.bot_path[0]
@@ -181,7 +185,10 @@ class Window:
                 offset_pointer = -1
                 # shows in witch direction the offset_pointer evolves
                 offset_dir_flag = True
+                # is the field the algorithem is currently at
                 work_tup = head_tup
+                # counts the steps to prevent that the bot loops across the whole game win
+                step_counter = 0
                 if tuple(map(self.add_tup, work_tup, self.tup_dir[tup_dict_index])) in tabu_fields:
                     tup_dict_index = (tup_dict_index + 2) % 4
                     offset_pointer = 1
@@ -190,9 +197,13 @@ class Window:
                 fields_left = True
                 while fields_left:
                     if offset_pointer != 0:
+                        step_counter += 1
                         next_field = tuple(map(self.add_tup, work_tup, self.tup_dir[tup_dict_index]))
                         if next_field in tabu_fields or \
-                                tuple(map(self.add_tup, next_field, self.tup_dir[i])) in tabu_fields:
+                                tuple(map(self.add_tup, next_field, self.tup_dir[i])) in tabu_fields or \
+                                ((i == 0 or i == 2) and step_counter >= 13) or \
+                                ((i == 1 or i == 3) and step_counter >= 27):
+                            step_counter = 0
                             tup_dict_index = i
                             if offset_pointer == -1:
                                 offset_dir_flag = True
@@ -243,6 +254,11 @@ class Window:
     @staticmethod
     def mul_tup(tup_val, fac_val):
         return tup_val * fac_val
+    
+    @staticmethod
+    def neighbors(tup):
+        y, x = tup
+        return [(y - 1, x), (y + 1, x), (y, x - 2), (y, x + 2)]
 
     @staticmethod
     def tup_to_direction(cur_direction, start, target):

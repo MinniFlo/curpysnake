@@ -22,6 +22,7 @@ class Snake:
         self.tabu_fields = set()
         self.rim_fields = set()
         self.all_fields = set()
+        self.snake_fields = set()
         self.loose = False
         self.win = False
         self.score = 0
@@ -38,6 +39,7 @@ class Snake:
     def reset_snake(self):
         self.head.set_coordinates(1, 8)
         self.body.clear()
+        self.snake_fields.clear()
         self.loose = False
         self.score = 0
         self.score_msg = " Score: 00{} ".format(self.score)
@@ -92,14 +94,16 @@ class Snake:
         else:
             self.win = True
 
+    # todo: more efficient pls
     def update_tabu_fields(self):
         self.tabu_fields.clear()
+        self.snake_fields.clear()
         head_y, head_x = self.head.get_coordinates()
-        self.tabu_fields.add((head_y, head_x))
+        self.snake_fields.add((head_y, head_x))
         for i in self.body:
             body_y, body_x = i.get_coordinates()
-            self.tabu_fields.add((body_y, body_x))
-        self.tabu_fields = self.tabu_fields | self.rim_fields
+            self.snake_fields.add((body_y, body_x))
+        self.tabu_fields = self.snake_fields | self.rim_fields
 
     def fill_rim_fields(self):
         top_y, top_x = 0, 0

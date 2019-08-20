@@ -165,7 +165,8 @@ class Window:
             self.bot_path.insert(0, candidate)
             step -= 1
         # checks if the snake will run into a dead end and returns the next tup
-        next_tup = self.dead_end_check(self.bot_path[0], (cur_y, cur_x))
+        next_tup = self.bot_path[0]
+        # next_tup = self.dead_end_check(self.bot_path[0], (cur_y, cur_x))
         # translates the next field, to go to, into a direction
         next_direction = self.tup_to_direction(self.snake.direction, (cur_y, cur_x), next_tup)
         self.update_buffer(next_direction)

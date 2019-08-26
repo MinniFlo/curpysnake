@@ -28,6 +28,8 @@ class Window:
         self.path_char = chr(8728)
         # idle bot path
         self.idle_path = []
+        # counts the idle steps
+        self.idle_steps = 0
         # idle bot counter direction
         self.tup_dir = {0: (0, 2), 1: (1, 0), 2: (0, -2), 3: (-1, 0)}
 
@@ -174,7 +176,8 @@ class Window:
     def idle_bot(self):
         head_tup = self.snake.head.get_coordinates()
         tabu_fields = self.snake.tabu_fields
-        if len(self.idle_path) == 0:
+        if len(self.idle_path) == 0 or self.idle_steps == 5:
+            self.idle_steps = 0
             # saves the 4 idle paths
             results = []
 
@@ -238,13 +241,15 @@ class Window:
                 if len(path) > len(best_path):
                     best_path = path
 
-            if len(best_path) == 0:
-                # todo: emergency_idle
-                self.update_buffer(self.snake.direction)
-                return
-            else:
+            if len(best_path) > len(self.idle_path):
                 self.idle_path = best_path
 
+            if len(best_path) == 0:
+                # snake just goes ahead
+                self.update_buffer(self.snake.direction)
+                return
+
+        self.idle_steps += 1
         next_tup = self.idle_path.pop(0)
         next_direction = self.tup_to_direction(self.snake.direction, head_tup, next_tup)
         self.update_buffer(next_direction)

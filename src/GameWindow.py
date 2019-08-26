@@ -167,8 +167,7 @@ class Window:
             self.bot_path.insert(0, candidate)
             step -= 1
         # checks if the snake will run into a dead end and returns the next tup
-        next_tup = self.bot_path[0]
-        # next_tup = self.dead_end_check(self.bot_path[0], (cur_y, cur_x))
+        next_tup = self.dead_end_check(self.bot_path[0], (cur_y, cur_x))
         # translates the next field, to go to, into a direction
         next_direction = self.tup_to_direction(self.snake.direction, (cur_y, cur_x), next_tup)
         self.update_buffer(next_direction)
@@ -263,29 +262,19 @@ class Window:
                 tabu_count += 1
         if tabu_count >= 2:
             next_tup_count = self.flood_fill_counter(next_tup, tabu_fields)
-            self.win.addstr(0, 45, str(next_tup_count))
-            self.win.refresh()
             if next_tup_count >= len(self.snake.snake_fields):
-                self.win.addstr(0, 20, "Wall  ")
-                self.win.refresh()
                 return next_tup
-            choices_list = [i for i in self.neighbors(head_tup) if i not in tabu_fields or i != next_tup]
+            choices_list = [i for i in self.neighbors(head_tup) if i not in tabu_fields and i != next_tup]
             best_choice = (next_tup, next_tup_count)
             for choice in choices_list:
-                self.win.addstr(0, 20, "Danger")
-                self.win.refresh()
                 field_count = self.flood_fill_counter(choice, tabu_fields)
-                self.win.addstr(0, 35, str(next_tup_count))
-                self.win.refresh()
-                self.win.addstr(0, 20, "ok    ")
-                self.win.refresh()
                 if field_count > best_choice[1]:
                     best_choice = (choice, field_count)
             return best_choice[0]
         return next_tup
 
-    # @staticmethod
-    def flood_fill_counter(self, start_tup, tabu_fields):
+    @staticmethod
+    def flood_fill_counter(start_tup, tabu_fields):
         field_set = set()
         work_list = [start_tup]
         while True:
@@ -294,8 +283,6 @@ class Window:
             for cur_tup in work_list:
                 check_tups = Window.neighbors(cur_tup)
                 for tup in check_tups:
-                    self.win.addstr(0, 30, "counter: {}".format(add_counter))
-                    self.win.refresh()
                     if tup not in tabu_fields and tup not in field_set:
                         field_set.add(tup)
                         temp_list.append(tup)

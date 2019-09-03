@@ -52,6 +52,7 @@ class Snake:
         # activates ugly mode
         self.ugly = False
 
+    # resets all game relevant variables
     def reset_snake(self):
         self.head.set_coordinates(1, 8)
         self.body.clear()
@@ -63,53 +64,74 @@ class Snake:
         self.head.symbol = chr(9654)
         self.delay = 0.15
 
+    # initializes the game
     def init_sake(self):
         self.reset_snake()
+        # builds snake
         cur_y, cur_x = self.head.get_coordinates()
         for _ in range(3):
             cur_x -= 2
             color = curses.color_pair(self.color.color_num)
             body = BodyPart(cur_y, cur_x, color)
             self.body.append(body)
+        # ------------
         self.fill_all_fields()
         self.fill_rim_fields()
         self.update_tabu_fields()
         self.update_food_pos()
 
+    # main function of the logic class
     def update_snake_pos(self):
+        # safes last head position and color
         pre_y, pre_x = self.head.get_coordinates()
         pre_head_color = self.head.color
+        # calls move function (updates head position)
         self.move(pre_y, pre_x)
+        # gets the new color and sets it to the head
         color = self.color_fun()
         self.head.set_color(color)
+        # sets delay time random if ugly
         if self.ugly:
             self.delay = ((random.randrange(20, 75)) / 100) ** 3
 
+        # if food was eaten
         if self.food.get_coordinates() == self.head.get_coordinates():
+            # creates new body part and sets coordinates to the old head position and color
             new_body = BodyPart(pre_y, pre_x, pre_head_color)
+            # inserts the new body part on the first position of the body
             self.body.insert(0, new_body)
             self.update_tabu_fields()
             self.update_food_pos()
             self.update_score()
+        # the snake just moved normal
         else:
+            # the last body part gets removed and saved
             moved_body = self.body.pop()
+            # sets the coordinates and color of the removed body part to the coordinates and color of the old head
             moved_body.set_coordinates(pre_y, pre_x)
             moved_body.set_color(pre_head_color)
+            # inserts the removed body part on the first position of the body
             self.body.insert(0, moved_body)
             self.update_tabu_fields()
 
+    # updates the possition of the food
     def update_food_pos(self):
+        # gets all free fields
         work_fields = self.all_fields - self.tabu_fields
         work_fields = list(work_fields)
+        # if there are still free fields a new food will be set
         if work_fields:
             cur_y, cur_x = random.choice(work_fields)
             self.food.set_coordinates(cur_y, cur_x)
+            # lowers the delay every five food
             if self.delay > 0.1:
                 if self.score % 5 == 0:
                     self.delay -= 0.01
+        # if there are no fields left win is set to true
         else:
             self.win = True
 
+    # refreshes the tabu fields
     # todo: more efficient pls
     def update_tabu_fields(self):
         self.tabu_fields.clear()
@@ -121,6 +143,7 @@ class Snake:
             self.snake_fields.add((body_y, body_x))
         self.tabu_fields = self.snake_fields | self.rim_fields
 
+    # fills the rim fields set
     def fill_rim_fields(self):
         top_y, top_x = 0, 0
         bot_y, bot_x = self.max_y - 1, self.max_x - 1
@@ -131,6 +154,7 @@ class Snake:
             self.rim_fields.add((i, top_x))
             self.rim_fields.add((i, bot_x))
 
+    # fills the all fields set
     def fill_all_fields(self):
         for i in range(self.max_y):
             for j in range(self.max_x):
@@ -138,10 +162,12 @@ class Snake:
                     continue
                 self.all_fields.add((i, j))
 
+    # updates score
     def update_score(self):
         self.score += 1
         self.score_msg = " Score: {} ".format(str(self.score).rjust(3, "0"))
 
+    # sets snake head depending on the direction to the next field and ends the game. takes walls into account
     def walls_movement(self, pre_y, pre_x):
         if self.direction == Direction.UP:
             self.head.set_coordinates(pre_y - 1, pre_x)
@@ -154,6 +180,7 @@ class Snake:
         if self.head.get_coordinates() in self.tabu_fields:
             self.loose = True
 
+    # sets snake head depending on the direction to the next field and ends the game. takes walls not into account
     def free_movement(self, pre_y, pre_x):
         if self.direction == Direction.UP:
             if pre_y - 1 != 0:

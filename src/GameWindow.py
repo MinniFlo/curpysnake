@@ -30,6 +30,7 @@ class Window:
         self.idle_path = []
         # idle bot counter direction
         self.tup_dir = {0: (0, 2), 1: (1, 0), 2: (0, -2), 3: (-1, 0)}
+        self.error = 0
 
     def setup(self):
         curses.noecho()
@@ -109,70 +110,80 @@ class Window:
             self.update_buffer(Direction.RIGHT)
 
     def flood_bot(self):
-        # A* algorithm
-        # start coordinates
-        cur_y, cur_x = self.snake.head.get_coordinates()
-        # target coordinates
-        food_y, food_x = self.snake.food.get_coordinates()
-        tabu_fields = self.snake.tabu_fields
-        # saves all reachable fields. the key is the distance
-        step_dict = {0: {(cur_y, cur_x)}}
-        # flag for the while loop
-        target_reached = False
-        # counts the steps
-        step = 1
-        while not target_reached:
-            # inits new set for the new steps
-            step_dict[step] = set()
-            # iter over the last reached fields
-            for tup in step_dict[step - 1]:
-                # all neighbor fields
-                to_check_tups = self.neighbors(tup)
-                for neighbor in to_check_tups:
-                    # sorts out all not reachable fields
-                    if step == 1:
-                        if neighbor not in tabu_fields:
-                            step_dict[step].add(neighbor)
-                    else:
-                        if neighbor not in tabu_fields and neighbor not in step_dict[step - 2]:
-                            step_dict[step].add(neighbor)
-            # if no path to the target was found bot needs to idle
-            if step >= 150:
-                self.idle_bot()
-                return
-            # if the target is in the reachable fields the loop stops
-            if (food_y, food_x) in step_dict[step]:
-                target_reached = True
-            # else there will be another step
-            else:
-                step += 1
+        if not self.freeze:
+            # A* algorithm
+            # start coordinates
+            cur_y, cur_x = self.snake.head.get_coordinates()
+            # target coordinates
+            food_y, food_x = self.snake.food.get_coordinates()
+            tabu_fields = self.snake.tabu_fields.copy()
+            future_snake = self.snake.body.copy()
+            # saves all reachable fields. the key is the distance
+            step_dict = {0: {(cur_y, cur_x)}}
+            # flag for the while loop
+            target_reached = False
+            # counts the steps
+            step = 1
+            while not target_reached:
+                # inits new set for the new steps
+                step_dict[step] = set()
+                # removes the snake part from the tabu fields that disappeared in this step
+                if len(future_snake) > 0:
+                    remove_tup = future_snake.pop().get_coordinates()
+                    try:
+                        tabu_fields.remove(remove_tup)
+                    except:
+                        self.error += 1
 
-        self.idle_path.clear()
-        self.bot_path.clear()
-        # saves the path to the target
-        self.bot_path = [(food_y, food_x)]
-        # the first steps that will be worked on are the previous of the target step
-        step -= 1
-        # build the path from the target to the start backwards
-        while step > 0:
-            work_tup = self.bot_path[0]
-            to_find_tups = self.neighbors(work_tup)
-            candidate = ()
-            for tup in to_find_tups:
-                if tup in step_dict[step]:
-                    candidate = tup
-                    break
-            self.bot_path.insert(0, candidate)
+                # iter over the last reached fields
+                for tup in step_dict[step - 1]:
+                    # all neighbor fields
+                    to_check_tups = self.neighbors(tup)
+                    for neighbor in to_check_tups:
+                        # sorts out all not reachable fields
+                        if step == 1:
+                            if neighbor not in tabu_fields:
+                                step_dict[step].add(neighbor)
+                        else:
+                            if neighbor not in tabu_fields and neighbor not in step_dict[step - 2]:
+                                step_dict[step].add(neighbor)
+                # if no path to the target was found bot needs to idle
+                if step >= 150:
+                    self.idle_bot()
+                    return
+                # if the target is in the reachable fields the loop stops
+                if (food_y, food_x) in step_dict[step]:
+                    target_reached = True
+                # else there will be another step
+                else:
+                    step += 1
+
+            self.idle_path.clear()
+            self.bot_path.clear()
+            # saves the path to the target
+            self.bot_path = [(food_y, food_x)]
+            # the first steps that will be worked on are the previous of the target step
             step -= 1
-        # checks if the snake will run into a dead end and returns the next tup
-        next_tup = self.dead_end_check(self.bot_path[0], (cur_y, cur_x))
-        # translates the next field, to go to, into a direction
-        next_direction = self.tup_to_direction(self.snake.direction, (cur_y, cur_x), next_tup)
-        self.update_buffer(next_direction)
+            # build the path from the target to the start backwards
+            while step > 0:
+                work_tup = self.bot_path[0]
+                to_find_tups = self.neighbors(work_tup)
+                candidate = ()
+                for tup in to_find_tups:
+                    if tup in step_dict[step]:
+                        candidate = tup
+                        break
+                self.bot_path.insert(0, candidate)
+                step -= 1
+            # checks if the snake will run into a dead end and returns the next tup
+            next_tup = self.dead_end_check(self.bot_path[0], (cur_y, cur_x), tabu_fields)
+            # translates the next field, to go to, into a direction
+            next_direction = self.tup_to_direction(self.snake.direction, (cur_y, cur_x), next_tup)
+            self.update_buffer(next_direction)
 
     def idle_bot(self):
         head_tup = self.snake.head.get_coordinates()
-        tabu_fields = self.snake.tabu_fields
+        tabu_fields = self.snake.tabu_fields.copy()
         if len(self.idle_path) == 0:
             # saves the 4 idle paths
             results = []
@@ -245,14 +256,11 @@ class Window:
             if len(best_path) > len(self.idle_path):
                 self.idle_path = best_path
 
-
-
         next_tup = self.idle_path.pop(0)
         next_direction = self.tup_to_direction(self.snake.direction, head_tup, next_tup)
         self.update_buffer(next_direction)
 
-    def dead_end_check(self, next_tup, head_tup):
-        tabu_fields = self.snake.tabu_fields
+    def dead_end_check(self, next_tup, head_tup, tabu_fields):
         check_tups = self.neighbors(next_tup)
         tabu_count = 0
         for tup in check_tups:
@@ -260,7 +268,7 @@ class Window:
                 tabu_count += 1
         if tabu_count >= 2:
             next_tup_count = self.flood_fill_counter(next_tup, tabu_fields)
-            if next_tup_count >= len(self.snake.snake_fields):
+            if next_tup_count >= (len(self.snake.snake_fields) * 1.5):
                 return next_tup
             choices_list = [i for i in self.neighbors(head_tup) if i not in tabu_fields and i != next_tup]
             best_choice = (next_tup, next_tup_count)

@@ -13,25 +13,43 @@ class Direction(Enum):
 
 class Snake:
     def __init__(self, max_y, max_x, color, color_num):
+        # y and x size of the game field
         self.max_y, self.max_x = max_y, max_x
+        # instance of the color class
         self.color = color
+        # snake head obj
         self.head = Head(1, 8, curses.color_pair(self.color.color_num))
+        # snake body objects are saved in a list
         self.body = []
+        # food obj
         self.food = Food(1, 1)
+        # the direction the snake heads to
         self.direction = Direction.RIGHT
+        # the fields the snake can't move on
         self.tabu_fields = set()
+        # saves all fields (y, x) that are the rim of the game window
         self.rim_fields = set()
+        # saves all fields (y, x) of the game Window
         self.all_fields = set()
+        # saves all fields the snake is on
+        self.snake_fields = set()
         self.loose = False
+        self.win = False
+        # number of food the snake collected
         self.score = 0
+        # score string
         self.score_msg = " Score: 00{} ".format(self.score)
-        self.delay = 0.08
+        # the delay between the steps the snake takes
+        self.delay = 0.5
+        # saves the type of movement functions the snake can do (with/without walls)
         self.move = self.free_movement
+        # saves the type of color select function
         self.color_fun = self.color.calc_color
         self.color_fun_map = {1: self.color.blue_red_color, 2: self.color.red_green_color,
                               3: self.color.green_blue_color, 4: self.color.random_color}
         if color_num is not None:
             self.color_fun = self.color_fun_map[color_num]
+        # activates ugly mode
         self.ugly = False
 
     def reset_snake(self):

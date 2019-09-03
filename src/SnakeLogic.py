@@ -55,6 +55,7 @@ class Snake:
     def reset_snake(self):
         self.head.set_coordinates(1, 8)
         self.body.clear()
+        self.snake_fields.clear()
         self.loose = False
         self.score = 0
         self.score_msg = " Score: 00{} ".format(self.score)
@@ -100,20 +101,25 @@ class Snake:
     def update_food_pos(self):
         work_fields = self.all_fields - self.tabu_fields
         work_fields = list(work_fields)
-        cur_y, cur_x = random.choice(work_fields)
-        self.food.set_coordinates(cur_y, cur_x)
-        if self.delay > 0.1:
-            if self.score % 5 == 0:
-                self.delay -= 0.01
+        if work_fields:
+            cur_y, cur_x = random.choice(work_fields)
+            self.food.set_coordinates(cur_y, cur_x)
+            if self.delay > 0.1:
+                if self.score % 5 == 0:
+                    self.delay -= 0.01
+        else:
+            self.win = True
 
+    # todo: more efficient pls
     def update_tabu_fields(self):
         self.tabu_fields.clear()
+        self.snake_fields.clear()
         head_y, head_x = self.head.get_coordinates()
-        self.tabu_fields.add((head_y, head_x))
+        self.snake_fields.add((head_y, head_x))
         for i in self.body:
             body_y, body_x = i.get_coordinates()
-            self.tabu_fields.add((body_y, body_x))
-        self.tabu_fields = self.tabu_fields | self.rim_fields
+            self.snake_fields.add((body_y, body_x))
+        self.tabu_fields = self.snake_fields | self.rim_fields
 
     def fill_rim_fields(self):
         top_y, top_x = 0, 0

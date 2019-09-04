@@ -77,7 +77,7 @@ class Snake:
         # ------------
         self.fill_all_fields()
         self.fill_rim_fields()
-        self.update_tabu_fields()
+        self.init_tabu_fields()
         self.update_food_pos()
 
     # main function of the logic class
@@ -90,17 +90,16 @@ class Snake:
         # gets the new color and sets it to the head
         color = self.color_fun()
         self.head.set_color(color)
-        # sets delay time random if ugly
-        if self.ugly:
-            self.delay = ((random.randrange(20, 75)) / 100) ** 3
+
+        head_tup = self.head.get_coordinates()
 
         # if food was eaten
-        if self.food.get_coordinates() == self.head.get_coordinates():
+        if self.food.get_coordinates() == head_tup:
             # creates new body part and sets coordinates to the old head position and color
             new_body = BodyPart(pre_y, pre_x, pre_head_color)
             # inserts the new body part on the first position of the body
             self.body.insert(0, new_body)
-            self.update_tabu_fields()
+            self.update_tabu_fields(head_tup)
             self.update_food_pos()
             self.update_score()
         # the snake just moved normal
@@ -112,7 +111,11 @@ class Snake:
             moved_body.set_color(pre_head_color)
             # inserts the removed body part on the first position of the body
             self.body.insert(0, moved_body)
-            self.update_tabu_fields()
+            self.update_tabu_fields(head_tup, self.body[len(self.body) - 1].get_coordinates())
+
+        # sets delay time random if ugly
+        if self.ugly:
+            self.delay = ((random.randrange(20, 75)) / 100) ** 3
 
     # updates the possition of the food
     def update_food_pos(self):
@@ -131,17 +134,24 @@ class Snake:
         else:
             self.win = True
 
-    # refreshes the tabu fields
-    # todo: more efficient pls
-    def update_tabu_fields(self):
+    # init the tabu fields
+    def init_tabu_fields(self):
         self.tabu_fields.clear()
         self.snake_fields.clear()
         head_y, head_x = self.head.get_coordinates()
         self.snake_fields.add((head_y, head_x))
-        for i in self.body:
-            body_y, body_x = i.get_coordinates()
+        for i in range(len(self.body)-1):
+            body_y, body_x = self.body[i].get_coordinates()
             self.snake_fields.add((body_y, body_x))
         self.tabu_fields = self.snake_fields | self.rim_fields
+
+    # ...
+    def update_tabu_fields(self, new_head_tup, remove_tup = None):
+        self.tabu_fields.add(new_head_tup)
+        self.snake_fields.add(new_head_tup)
+        if remove_tup is not None:
+            self.tabu_fields.remove(remove_tup)
+            self.snake_fields.remove(remove_tup)
 
     # fills the rim fields set
     def fill_rim_fields(self):

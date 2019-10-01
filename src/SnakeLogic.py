@@ -111,7 +111,7 @@ class Snake:
             moved_body.set_color(pre_head_color)
             # inserts the removed body part on the first position of the body
             self.body.insert(0, moved_body)
-            self.update_tabu_fields(head_tup, self.body[len(self.body) - 1].get_coordinates())
+            self.update_tabu_fields(moved_body.get_coordinates(), self.body[len(self.body) - 2].get_coordinates())
 
 
 
@@ -123,7 +123,9 @@ class Snake:
     def update_food_pos(self):
         # gets all free fields
         work_fields = self.all_fields - self.tabu_fields
+        work_fields.remove(self.head.get_coordinates())
         work_fields = list(work_fields)
+
         # if there are still free fields a new food will be set
         if work_fields:
             cur_y, cur_x = random.choice(work_fields)
@@ -140,11 +142,9 @@ class Snake:
     def init_tabu_fields(self):
         self.tabu_fields.clear()
         self.snake_fields.clear()
-        head_y, head_x = self.head.get_coordinates()
-        self.snake_fields.add((head_y, head_x))
-        for i in range(len(self.body)-1):
-            body_y, body_x = self.body[i].get_coordinates()
-            self.snake_fields.add((body_y, body_x))
+        for i in range(len(self.body) - 2):
+            body_tup = self.body[i].get_coordinates()
+            self.snake_fields.add(body_tup)
         self.tabu_fields = self.snake_fields | self.rim_fields
 
     # ...

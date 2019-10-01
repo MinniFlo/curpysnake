@@ -99,7 +99,7 @@ class Snake:
             new_body = BodyPart(pre_y, pre_x, pre_head_color)
             # inserts the new body part on the first position of the body
             self.body.insert(0, new_body)
-            self.update_tabu_fields(head_tup)
+            self.update_tabu_fields((pre_y, pre_x))
             self.update_food_pos()
             self.update_score()
         # the snake just moved normal
@@ -113,7 +113,9 @@ class Snake:
             self.body.insert(0, moved_body)
             self.update_tabu_fields(head_tup, self.body[len(self.body) - 1].get_coordinates())
 
-        # sets delay time random if ugly
+
+
+    # sets delay time random if ugly
         if self.ugly:
             self.delay = ((random.randrange(20, 75)) / 100) ** 3
 
@@ -146,9 +148,9 @@ class Snake:
         self.tabu_fields = self.snake_fields | self.rim_fields
 
     # ...
-    def update_tabu_fields(self, new_head_tup, remove_tup = None):
-        self.tabu_fields.add(new_head_tup)
-        self.snake_fields.add(new_head_tup)
+    def update_tabu_fields(self, add_tup, remove_tup = None):
+        self.tabu_fields.add(add_tup)
+        self.snake_fields.add(add_tup)
         if remove_tup is not None:
             self.tabu_fields.remove(remove_tup)
             self.snake_fields.remove(remove_tup)
@@ -212,6 +214,5 @@ class Snake:
                 self.head.set_coordinates(pre_y, pre_x + 2)
             else:
                 self.head.set_coordinates(pre_y, 2)
-        for i in self.body:
-            if i.get_coordinates() == self.head.get_coordinates():
-                self.loose = True
+        if self.head.get_coordinates() in self.tabu_fields:
+            self.loose = True

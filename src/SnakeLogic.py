@@ -62,7 +62,7 @@ class Snake:
         self.score_msg = " Score: 00{} ".format(self.score)
         self.direction = Direction.RIGHT
         self.head.symbol = chr(9654)
-        self.delay = 0.15
+        self.delay = 0.03
 
     # initializes the game
     def init_sake(self):
@@ -111,7 +111,7 @@ class Snake:
             moved_body.set_color(pre_head_color)
             # inserts the removed body part on the first position of the body
             self.body.insert(0, moved_body)
-            self.update_tabu_fields(moved_body.get_coordinates(), self.body[len(self.body) - 2].get_coordinates())
+            self.update_tabu_fields(moved_body.get_coordinates(), self.body[len(self.body) - 1].get_coordinates())
 
 
 
@@ -142,7 +142,7 @@ class Snake:
     def init_tabu_fields(self):
         self.tabu_fields.clear()
         self.snake_fields.clear()
-        for i in range(len(self.body) - 2):
+        for i in range(len(self.body) - 1):
             body_tup = self.body[i].get_coordinates()
             self.snake_fields.add(body_tup)
         self.tabu_fields = self.snake_fields | self.rim_fields

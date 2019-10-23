@@ -30,7 +30,7 @@ class Window:
         self.idle_path = []
         # idle bot counter direction
         self.tup_dir = {0: (0, 2), 1: (1, 0), 2: (0, -2), 3: (-1, 0)}
-        self.error = 0
+        self.cycle_counter = 0
 
     def setup(self):
         curses.noecho()
@@ -95,6 +95,20 @@ class Window:
         time.sleep(0.01)
 
     # bots -------------------------------------------------------------------------------------------------------------
+
+    def cycle_bot(self):
+        if self.cycle_counter == 0:
+            self.update_buffer(Direction.DOWN)
+            self.cycle_counter = (self.cycle_counter + 1) % 4
+        elif self.cycle_counter == 1:
+            self.update_buffer(Direction.LEFT)
+            self.cycle_counter = (self.cycle_counter + 1) % 4
+        elif self.cycle_counter == 2:
+            self.update_buffer(Direction.UP)
+            self.cycle_counter = (self.cycle_counter + 1) % 4
+        elif self.cycle_counter == 3:
+            self.update_buffer(Direction.RIGHT)
+            self.cycle_counter = (self.cycle_counter + 1) % 4
 
     def path_bot(self):
         y, x = self.snake.head.get_coordinates()

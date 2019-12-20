@@ -144,9 +144,9 @@ class Window:
                 # inits new set for the new steps
                 step_dict[step] = set()
                 # removes the snake part from the tabu fields that disappeared in this step
-                # if len(future_snake) > 0:
-                #     remove_tup = future_snake.pop().get_coordinates()
-                #     future_tabu_fields.remove(remove_tup)
+                if len(future_snake) > 0 and step > 1:
+                    remove_tup = future_snake.pop().get_coordinates()
+                    future_tabu_fields.remove(remove_tup)
 
                 # iter over the last reached fields
                 for tup in step_dict[step - 1]:

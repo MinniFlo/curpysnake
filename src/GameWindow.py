@@ -80,7 +80,7 @@ class Window:
 
         # bot_movement input
         if not self.freeze:
-            self.update_buffer(self.snake_bot.cycle_bot())
+            self.update_buffer(self.snake_bot.flood_bot())
 
         if cur_key in [ord('q'), 27]:
             self.change_funs(self.pause_win.render, self.pause_win.input, 0.01)

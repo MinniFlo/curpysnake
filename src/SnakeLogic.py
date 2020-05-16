@@ -62,7 +62,7 @@ class Snake:
         self.score_msg = " Score: 00{} ".format(self.score)
         self.direction = Direction.RIGHT
         self.head.symbol = chr(9654)
-        self.delay = 0.03
+        self.delay = 0.001
 
     # initializes the game
     def init_sake(self):
@@ -112,8 +112,6 @@ class Snake:
             # inserts the removed body part on the first position of the body
             self.body.insert(0, moved_body)
             self.update_tabu_fields(moved_body.get_coordinates(), self.body[len(self.body) - 1].get_coordinates())
-
-
 
     # sets delay time random if ugly
         if self.ugly:

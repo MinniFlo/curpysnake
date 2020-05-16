@@ -39,6 +39,7 @@ class SnakeBot:
         while not target_reached:
             # inits new set for the new steps
             step_dict[step] = set()
+
             # removes the snake part from the tabu fields that disappeared in this step
             if len(future_snake) > 0 and step > 1:
                 remove_tup = future_snake.pop().get_coordinates()

@@ -1,4 +1,5 @@
 from SnakeLogic import Direction
+import math
 
 
 class SnakeBot:
@@ -88,7 +89,7 @@ class SnakeBot:
             self.bot_path.insert(0, candidate)
             step -= 1
         # checks if the snake will run into a dead end and returns the next tup
-        next_tup = self.dead_end_check(self.bot_path[0], (cur_y, cur_x), future_tabu_fields)
+        next_tup = self.dead_end_check(self.bot_path[0], (cur_y, cur_x), self.snake.tabu_fields.copy())
         # translates the next field, to go to, into a direction
         next_direction = self.tup_to_direction(self.snake.direction, (cur_y, cur_x), next_tup)
         return next_direction
@@ -175,26 +176,33 @@ class SnakeBot:
         return next_direction
 
     def dead_end_check(self, next_tup, head_tup, tabu_fields):
+        # body_last = self.snake.body[-1].get_coordinates()
+        # if body_last in self.far_neighbors(head_tup):
+        #     return next_tup
         tabu_fields.add(head_tup)
-        next_tup_count = self.flood_fill_counter(next_tup, tabu_fields)
+        snake_end = self.snake.body[-1]
+        head_neighbors = self.neighbors(head_tup)
+        next_tup_count = self.flood_fill_counter(next_tup, tabu_fields, snake_end)
         if next_tup_count >= (len(self.snake.snake_fields)):
             return next_tup
         best_choice = (next_tup, next_tup_count)
-        choices_list = [i for i in self.neighbors(head_tup) if i not in tabu_fields and i != next_tup]
+        choices_list = [i for i in head_tup if i not in tabu_fields and i != next_tup]
         for choice in choices_list:
-            field_count = self.flood_fill_counter(choice, tabu_fields)
+            field_count = self.flood_fill_counter(choice, tabu_fields, snake_end)
             if field_count > best_choice[1]:
                 best_choice = (choice, field_count)
         return best_choice[0]
 
     @staticmethod
-    def flood_fill_counter(start_tup, tabu_fields):
+    def flood_fill_counter(start_tup, tabu_fields, snake_end):
         field_set = set()
         work_list = [start_tup]
         while len(work_list) > 0:
             # temp_list = []
             cur_tup = work_list.pop()
             if cur_tup in tabu_fields or cur_tup in field_set:
+                if cur_tup == snake_end:
+                    return math.inf
                 continue
             else:
                 work_list.extend(SnakeBot.neighbors(cur_tup))
@@ -213,6 +221,12 @@ class SnakeBot:
     def neighbors(tup):
         y, x = tup
         return [(y - 1, x), (y + 1, x), (y, x - 2), (y, x + 2)]
+
+    @staticmethod
+    def far_neighbors(tup):
+        y, x = tup
+        return {(y - 1, x), (y + 1, x), (y, x - 2), (y, x + 2), (y - 1, x - 2), (y + 1, x + 2),
+                (y - 1, x + 2), (y + 1, x - 2), (y - 2, x), (y + 2, x), (y, x - 4), (y, x + 4)}
 
     @staticmethod
     def tup_to_direction(cur_direction, start, target):

@@ -37,10 +37,11 @@ class MyTestCase(unittest.TestCase):
         elif char == 'o':
             head_tup = (field_counter // field_width, (field_counter % field_width) * 2)
         field_counter += 1
+    tabu_list.add(head_tup)
     print(tabu_list)
 
-    def test_something(self, tabu_list=tabu_list, head_tup=head_tup):
-        self.assertEqual(1, SnakeBot.flood_fill_counter((9, 20), tabu_list, head_tup))
+    def test_something(self, tabu_list=tabu_list):
+        self.assertEqual(1, SnakeBot.flood_fill_counter((8, 20), tabu_list,))
 
 
 if __name__ == '__main__':

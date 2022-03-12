@@ -3,3 +3,4 @@ snake.iml
 venv/*
 src/test.py
 *.pyc
+*.log

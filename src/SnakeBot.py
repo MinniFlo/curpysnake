@@ -1,5 +1,6 @@
 from SnakeLogic import Direction
 import math
+import logging
 
 
 class SnakeBot:
@@ -18,10 +19,9 @@ class SnakeBot:
         self.last_bot_path = []
         # bot path char
         self.path_char = chr(8728)
-        # # cycle_bot_counter
-        # self.cycle_counter = 0
-        # # var for mod operator
-        # self.cycle_size = 4
+
+        # debug logging
+        logging.basicConfig(filename="debug.log", level=logging.INFO)
 
     def flood_bot(self):
         # A* algorithm
@@ -246,33 +246,3 @@ class SnakeBot:
             else:
                 if cur_direction != Direction.UP:
                     return Direction.UP
-
-        # def cycle_bot(self):
-    #     if self.cycle_counter == 0:
-    #         self.cycle_counter = (self.cycle_counter + 1) % self.cycle_size
-    #         return Direction.DOWN
-    #     elif self.cycle_counter == 1:
-    #         self.cycle_counter = (self.cycle_counter + 1) % self.cycle_size
-    #         return Direction.LEFT
-    #     elif self.cycle_counter == 2:
-    #         self.cycle_counter = (self.cycle_counter + 1) % self.cycle_size
-    #         return Direction.UP
-    #     elif self.cycle_counter == 3:
-    #         self.cycle_counter = (self.cycle_counter + 1) % self.cycle_size
-    #         self.cycle_size += 1
-    #         return Direction.RIGHT
-
-    # does not work with current structure
-
-    # def path_bot(self):
-    #     y, x = self.snake.head.get_coordinates()
-    #     if x == 56 and self.snake.direction == Direction.RIGHT:
-    #         return Direction.DOWN
-    #         return Direction.LEFT
-    #     elif x == 4 and y != 14 and self.snake.direction == Direction.LEFT:
-    #         return Direction.DOWN
-    #         return Direction.RIGHT
-    #     elif x == 2 and y == 14:
-    #         return Direction.UP
-    #     elif x == 2 and y == 1:
-    #         return Direction.RIGHT

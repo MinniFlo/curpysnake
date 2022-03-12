@@ -180,13 +180,13 @@ class SnakeBot:
         # if body_last in self.far_neighbors(head_tup):
         #     return next_tup
         tabu_fields.add(head_tup)
-        snake_end = self.snake.body[-1]
+        snake_end = self.snake.body[-1].get_coordinates()
         head_neighbors = self.neighbors(head_tup)
         next_tup_count = self.flood_fill_counter(next_tup, tabu_fields, snake_end)
-        if next_tup_count >= (len(self.snake.snake_fields)):
+        if next_tup_count >= (len(self.snake.snake_fields)) * 1.3:
             return next_tup
         best_choice = (next_tup, next_tup_count)
-        choices_list = [i for i in head_tup if i not in tabu_fields and i != next_tup]
+        choices_list = [i for i in head_neighbors if i not in tabu_fields and i != next_tup]
         for choice in choices_list:
             field_count = self.flood_fill_counter(choice, tabu_fields, snake_end)
             if field_count > best_choice[1]:
@@ -198,11 +198,10 @@ class SnakeBot:
         field_set = set()
         work_list = [start_tup]
         while len(work_list) > 0:
-            # temp_list = []
             cur_tup = work_list.pop()
-            if cur_tup in tabu_fields or cur_tup in field_set:
-                if cur_tup == snake_end:
-                    return math.inf
+            if cur_tup == snake_end:
+                return math.inf
+            elif cur_tup in tabu_fields or cur_tup in field_set:
                 continue
             else:
                 work_list.extend(SnakeBot.neighbors(cur_tup))

@@ -28,7 +28,7 @@ class Window:
         curses.curs_set(0)
         self.win.keypad(True)
         self.pause_win.win.keypad(True)
-        self.win.nodelay(False)
+        self.win.nodelay(True)
         self.snake.init_sake()
         self.draw()
 

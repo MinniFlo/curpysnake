@@ -1,5 +1,6 @@
 import unittest
 from SnakeBot import SnakeBot
+import math
 
 
 class MyTestCase(unittest.TestCase):
@@ -14,8 +15,8 @@ class MyTestCase(unittest.TestCase):
                   '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',#7
                   '#', ' ', ' ', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#',#8
                   '#', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',#9
-                  '#', ' ', ' ', '#', '#', '#', '#', '#', '#', '#', 'o', '#', ' ', '#', '#', '#', '#', '#', '#',#10
-                  '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',#11
+                  '#', ' ', ' ', '#', '#', '#', '#', '#', '#', '#', 'o', '#', '#', '#', '#', '#', '#', '#', '#',#10
+                  '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',#11
                   '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',#12
                   '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',#13
                   '#', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', '#',#14
@@ -40,8 +41,8 @@ class MyTestCase(unittest.TestCase):
     tabu_list.add(head_tup)
     print(tabu_list)
 
-    def test_something(self, tabu_list=tabu_list):
-        self.assertEqual(1, SnakeBot.flood_fill_counter((8, 20), tabu_list,))
+    def test_flood_count_clean(self, tabu_list=tabu_list):
+        self.assertEqual(14, SnakeBot.flood_fill_counter((9, 20), tabu_list, (11, 18)))
 
 
 if __name__ == '__main__':
